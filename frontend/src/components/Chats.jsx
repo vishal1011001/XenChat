@@ -1,3 +1,4 @@
+import { SearchBar } from "./ChatsComponents/SearchBar";
 
 
 export function Chats() {
@@ -17,20 +18,24 @@ export function Chats() {
         },
         {
             uid: "123458",
-            name: "Vishal Jakhar",
-            last_message: "Heisenberg was a great scientist from Germany",
-            pfp: "pfp1"
+            name: "XenAi",
+            last_message: "Hey there, Ready when you are.",
+            pfp: "pfp3"
         }
-    ]
+    ];
+
+
     return (
-        <div className="h-screen w-[30vw] bg-slate-600 ">
+        <div className="h-screen w-[35vw] bg-slate-900 ">
             <div className="p-4">
                 <h2 className="text-2xl text-white font-bold">XenChat</h2>
             </div>
+
+            <SearchBar />
             
             <div className="p-2.5 flex flex-col gap-1">
                 {chatsArr.map((chat) => (
-                    <div key={chat.uid} className="flex flex-row pl-3 p-1 hover:bg-gray-500 rounded-xl mr-4">
+                    <div key={chat.uid} className="flex flex-row pl-3 p-1 hover:bg-slate-700 rounded-xl mr-4">
                         <img src={`/${chat.pfp}.png`} className="h-10 rounded rounded-full self-center" />
                         <div>
                             <p className="text-xl text-white font-bold pl-4">{chat.name}</p>
