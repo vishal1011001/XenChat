@@ -1,3 +1,4 @@
+import { FilterButtons } from "./ChatsComponents/FilterButtons";
 import { SearchBar } from "./ChatsComponents/SearchBar";
 
 
@@ -32,8 +33,10 @@ export function Chats() {
             </div>
 
             <SearchBar />
+
+            <FilterButtons />
             
-            <div className="p-2.5 flex flex-col gap-1">
+            <div className="p-2.5 pt-0 flex flex-col gap-1">
                 {chatsArr.map((chat) => (
                     <div key={chat.uid} className="flex flex-row pl-3 p-1 hover:bg-slate-700 rounded-xl mr-4">
                         <img src={`/${chat.pfp}.png`} className="h-10 rounded rounded-full self-center" />

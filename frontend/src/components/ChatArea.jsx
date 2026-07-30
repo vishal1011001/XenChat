@@ -184,16 +184,22 @@ export function ChatArea() {
             content: "On my way!",
             time_stamp: "2026-07-27 11:46:00",
             sender_self: false
+        },
+        {
+            uid: "msg030",
+            content: "Running phast phast!!",
+            time_stamp: "2026-07-27 11:46:00",
+            sender_self: false
         }
     ];
 
 
     return (
-        <div className="h-screen bg-[url('/chat-bg.jpg')] bg-cover bg-fixed w-full flex flex-col justify-between pb-2 overflow-scroll scrollbar-none scroll-auto scroll">
+        <div className="h-screen bg-[url('/chat-bg.jpg')] bg-cover bg-fixed w-full flex flex-col justify-between pb-2 pt-15 overflow-scroll scrollbar-none scroll-auto scroll">
             <HeaderBar />
 
             <Messages messages={messages} />
-
+            
             <MessageCompose />
         </div>
     );
