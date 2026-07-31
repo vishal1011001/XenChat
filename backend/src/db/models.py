@@ -66,6 +66,7 @@ class Message(SQLModel, table=True):
         )
     )
     
+    #manual entry of following 3 fields at backend level
     content: str
     conv_uid: uuid.UUID = Field(
         foreign_key='conversation.conv_uid'

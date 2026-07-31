@@ -4,6 +4,10 @@ from contextlib import asynccontextmanager
 from .db.main import init_db
 from typing import List
 
+from src.chats.service import ChatService
+from src.db.main import session_factory
+chat_service = ChatService()
+
 @asynccontextmanager
 async def life_span(app: FastAPI):
     print('server is running...')
@@ -41,7 +45,25 @@ class ConnectionManager:
             
 manager = ConnectionManager()
 
-
+@app.websocket('/ws/{client_id}')
+async def websocket_endpoint(websocket: WebSocket, client_id: str):
+    await manager.connect(websocket)
+    try:
+        # continuosly listening for data
+        while True:
+            data = await websocket.receive_json()
+            
+            async with session_factory() as session:
+                new_msg = await chat_service.register_message(
+                    message=data,
+                    session=session
+                )
+            
+            await manager.broadcast(f"{client_id}: {data}")
+            print('MESSAGE SENT!')
+    except WebSocketDisconnect:
+        await manager.disconnect(websocket)
+        await manager.broadcast(f"{client_id} left the chat.")
     
-
+    
 app.include_router(chat_router, prefix=f"/api/{version}/response", tags=['response'])
