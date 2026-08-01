@@ -1,8 +1,9 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from .chats.routes import chat_router
 from contextlib import asynccontextmanager
 from .db.main import init_db
 from typing import List
+from src.auth.routes import auth_router
+
 
 from src.chats.service import ChatService
 from src.db.main import session_factory
@@ -59,6 +60,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                     session=session
                 )
             
+            
             await manager.broadcast(f"{client_id}: {data}")
             print('MESSAGE SENT!')
     except WebSocketDisconnect:
@@ -66,4 +68,4 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
         await manager.broadcast(f"{client_id} left the chat.")
     
     
-app.include_router(chat_router, prefix=f"/api/{version}/response", tags=['response'])
+app.include_router(auth_router, prefix=f"/api/{version}/auth", tags=["auth"])
