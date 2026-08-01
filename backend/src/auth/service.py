@@ -2,6 +2,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from .schemas import UserCreateModel
 from sqlmodel import select
 from ..db.models import User
+from .utils import generate_password_hash
 
 class AuthService():
     async def get_user_by_email(self, email: str, session: AsyncSession):
@@ -28,9 +29,11 @@ class AuthService():
             **user_data_dict
         )
         
-        new_user.password_hash = user_data_dict['password']
+        hashed_password = generate_password_hash(user_data_dict['password'])
+        new_user.password_hash = hashed_password
         
         session.add(new_user)
         await session.commit()
         return new_user
         
+    
