@@ -17,7 +17,7 @@ class User(SQLModel, table=True):
     )
     username: str
     email: str
-    password_hash: str
+    password_hash: str = Field(exclude=True)
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
@@ -40,6 +40,8 @@ class Conversation(SQLModel, table=True):
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 
+
+# Table to store - conversation id and associated members (user_uid)
 class ConversationMember(SQLModel, table=True):
     __tablename__='conversation_member'
     
@@ -54,6 +56,8 @@ class ConversationMember(SQLModel, table=True):
     role: str = "member"
     joined_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
+    
+# Messages Table model
 class Message(SQLModel, table=True):
     __tablename__='messages'
     
