@@ -9,20 +9,19 @@ passwd_context = CryptContext(
     schemes=['bcrypt']
 )
 
-ACCESS_TOKEN_EXPIRY=24
 
 def generate_password_hash(password: str) -> str:
     hash = passwd_context.hash(password)
     return hash
 
 def verify_password_hash(password: str, hashed: str):
-    return password_hash.verify(password, hashed)
+    return passwd_context.verify(password, hashed)
 
-async def create_access_token(user_data: dict, expiry: timedetla = None, refresh: bool=False):
+async def create_access_token(user_data: dict, expiry: timedetla, refresh: bool=False):
     payload = {}
     
     payload['user'] = user_data
-    payload['exp'] = datetime.now() + (expiry if expiry is not None else timedelta(hours=ACCESS_TOKEN_EXPIRY))
+    payload['exp'] = datetime.now() + expiry
     payload['jti'] = str(uuid.uuid4())
     payload['refresh'] = refresh
     
