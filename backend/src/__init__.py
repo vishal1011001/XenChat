@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from .db.main import init_db
 from typing import List
 from src.auth.routes import auth_router
+import uuid
 
 
 from src.chats.service import ChatService
@@ -25,44 +26,66 @@ app = FastAPI(
     lifespan=life_span
 )
 
+class SocketConnection:
+    def __init__(self, client_id: uuid.UUID, websocket: WebSocket):
+        self.client_id = client_id
+        self.websocket = websocket
+        
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        self.active_connections: List[SocketConnection] = []
         
-    async def connect(self, websocket: WebSocket):
+    async def find_connection(self, member_uid):
+        for connection in self.active_connections:
+            if connection.client_id == member_uid:
+                return connection
+        
+    async def connect(self, websocket: WebSocket, client_id: uuid.UUID):
         await websocket.accept()
-        self.active_connections.append(websocket)
+        new_conn = SocketConnection(client_id, websocket)
+        self.active_connections.append(new_conn)
         
     async def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
         
     async def send_personal_message(self, message:str, websocket: WebSocket):
-        await websocket.send_text(message)
+        await websocket.send_text(str(message))
         
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message) 
+    async def broadcast(self, member_uids: List, message: str):
+        receivers = []
+        for member_uid in member_uids:
+            receiver = await self.find_connection(member_uid)
+            if receiver:
+                receivers.append(receiver.websocket)
+        
+        for connection in receivers:
+            await self.send_personal_message(message, connection)
             
 manager = ConnectionManager()
 
 @app.websocket('/ws/{client_id}')
-async def websocket_endpoint(websocket: WebSocket, client_id: str):
-    await manager.connect(websocket)
+async def websocket_endpoint(websocket: WebSocket, client_id):
+    await manager.connect(websocket, uuid.UUID(client_id))
     try:
         # continuosly listening for data
         while True:
             data = await websocket.receive_json()
             
+            #saving message in database
             async with session_factory() as session:
                 new_msg = await chat_service.register_message(
                     message=data,
                     session=session
                 )
             
+            #broadcasting message to all conversation members - that are online
+            conv_uid = data['conv_uid']
+            message = data['content']
+            member_uids = await chat_service.conv_members(conv_uid, session)
+
+            await manager.broadcast(member_uids, message)
             
-            await manager.broadcast(f"{client_id}: {data}")
-            print('MESSAGE SENT!')
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
         await manager.broadcast(f"{client_id} left the chat.")
