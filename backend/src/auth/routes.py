@@ -15,9 +15,9 @@ ACCESS_TOKEN_EXPIRY=timedelta(hours=24)
 REFRESH_TOKEN_EXPIRY=timedelta(days=7)
 
 @auth_router.post('/signup')
-async def user_signup(user_data: UserCreateModel, session: AsyncSession = Depends(get_session)):
-    email = user_data.email
-    username = user_data.username
+async def user_signup(user_credentials: UserCreateModel, session: AsyncSession = Depends(get_session)):
+    email = user_credentials.email
+    username = user_credentials.username
     email_exists = await auth_service.check_email_exists(email, session)
     username_exists = await auth_service.check_username_exists(username, session)
     if email_exists:
@@ -52,7 +52,7 @@ async def user_signin(user_credentials: UserLoginModel, session: AsyncSession = 
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="username not found")
         user_data = await auth_service.get_user_by_username(username, session)
-            
+     
             
     pass_correct = verify_password_hash(password, user_data.password_hash)
     if not pass_correct:
