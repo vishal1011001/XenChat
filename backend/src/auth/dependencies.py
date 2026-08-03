@@ -15,13 +15,13 @@ from fastapi import status
 
 class TokenBearer(HTTPBearer):
     def __init__(self,auto_error = True):
-        super().auto_error = auto_error
+        super().__init__(auto_error=auto_error)
         
     async def __call__(self, request: Request) -> HTTPAuthorizationCredentials | None:
         creds = await super().__call__(request)
         
         token = creds.credentials
-        token_data = decode_token(token)
+        token_data = await decode_token(token)
         
         if not token_data:
             raise HTTPExceptions(status_code=status.HTTP_401_UNAUTHORIZED,
