@@ -28,8 +28,9 @@ export function Chats() {
 
     return (
         <div className="h-screen w-[35vw] bg-slate-900 ">
-            <div className="p-4">
+            <div className="p-4 pl-6 w-[28vw] flex flex-row justify-between items-center">
                 <h2 className="text-2xl text-white font-bold">XenChat</h2>
+                <button className="text-white rounded-full p-1 hover:bg-slate-700"><img src='/more.png' className="h-8 invert-100"/></button>
             </div>
 
             <SearchBar />
