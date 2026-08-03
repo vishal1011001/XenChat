@@ -55,3 +55,15 @@ class RefreshTokenBearer(TokenBearer):
                 detail='provide refresh token'
             )
     
+async def get_current_user(
+    token_data: dict = Depends(AccessTokenBearer()),
+    session: AsyncSession = Depends(get_session)
+):
+    email = token_data['user']['email']
+    user = AuthService().get_user_by_email(email)
+    if user:
+        return user
+    else: 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='user not found.')
+        
