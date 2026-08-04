@@ -18,4 +18,4 @@ async def add_jti_to_blocklist(token) -> None:
     await token_blocklist.set(name=jti, value="", ex=remaining_time)
     
 async def check_token_in_blocklist(jti: str) -> bool:
-    return token_blocklist.exists(jti) == 1
+    return await token_blocklist.exists(jti) == 1
