@@ -91,6 +91,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id):
         await manager.disconnect(websocket)
         await manager.broadcast(f"{client_id} left the chat.")
     
-    
+
 app.include_router(auth_router, prefix=f"/api/{version}/auth", tags=["auth"])
-app.include_router(chat_router, prefix=f"/api/{version}/response", tags=["response"])
+app.include_router(chat_router, prefix=f"/api/{version}/chats", tags=["chats"])
