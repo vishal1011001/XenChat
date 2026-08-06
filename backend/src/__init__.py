@@ -4,6 +4,7 @@ from .db.main import init_db
 from typing import List
 from src.auth.routes import auth_router
 from src.chats.routes import chat_router
+from .middleware import register_middleware
 import uuid
 
 
@@ -94,3 +95,5 @@ async def websocket_endpoint(websocket: WebSocket, client_id):
 
 app.include_router(auth_router, prefix=f"/api/{version}/auth", tags=["auth"])
 app.include_router(chat_router, prefix=f"/api/{version}/chats", tags=["chats"])
+
+register_middleware(app)
