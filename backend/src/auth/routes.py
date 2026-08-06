@@ -25,9 +25,9 @@ async def user_signup(user_credentials: UserCreateModel, session: AsyncSession =
                             detail="Email already registered.")
     elif username_exists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="username already in use.")
+                            detail="Username already in use.")
     
-    new_user = await auth_service.create_user(user_data, session)
+    new_user = await auth_service.create_user(user_credentials, session)
     return new_user
 
 

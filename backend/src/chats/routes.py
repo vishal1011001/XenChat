@@ -10,12 +10,6 @@ chat_service = ChatService()
 
 chat_router = APIRouter()
 access_token_bearer = AccessTokenBearer()        
-
-# @chat_router.get('/')
-# async def get_response(token_data: dict = Depends(access_token_bearer)):
-#     return {
-#         "message": "Server is running OK."
-#     }
     
 @chat_router.get('/')
 async def get_chats_of_user(
@@ -25,7 +19,6 @@ async def get_chats_of_user(
     email = token_data['user']['email']
     user = await auth_service.get_user_by_email(email, session)
     user_uid = user.user_uid
-    print('hi')
+    
     messages = await chat_service.get_messages_of_user(user_uid, session)
-    print('bye')
     return messages
