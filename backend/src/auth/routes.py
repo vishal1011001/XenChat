@@ -7,6 +7,8 @@ from fastapi.exceptions import HTTPException
 from .schemas import UserCreateModel, UserLoginModel
 from .utils import verify_password_hash, create_access_token
 from datetime import timedelta
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 
 auth_router = APIRouter()
 auth_service = AuthService()
@@ -14,7 +16,7 @@ auth_service = AuthService()
 ACCESS_TOKEN_EXPIRY=timedelta(hours=24)
 REFRESH_TOKEN_EXPIRY=timedelta(days=7)
 
-@auth_router.post('/signup')
+@auth_router.post('/signup', status_code=status.HTTP_201_CREATED)
 async def user_signup(user_credentials: UserCreateModel, session: AsyncSession = Depends(get_session)):
     email = user_credentials.email
     username = user_credentials.username
@@ -28,15 +30,25 @@ async def user_signup(user_credentials: UserCreateModel, session: AsyncSession =
                             detail="Username already in use.")
     
     new_user = await auth_service.create_user(user_credentials, session)
-    return new_user
+
+    return {
+        "msg": "Registration success",
+        "status_code": "success", 
+        "user": new_user,
+    }
 
 
 @auth_router.post('/signin')
 async def user_signin(user_credentials: UserLoginModel, session: AsyncSession = Depends(get_session)):
-    email = user_credentials.email
-    username = user_credentials.username
+    identity = user_credentials.identity
+    email = None
+    username = None
+    if identity[-1: -5: -1] and '@' in identity:
+        email = identity   
+    else:
+        username = identity
+        
     password = user_credentials.password
-    
     user_data = None
     
     if email is not None:
@@ -78,16 +90,10 @@ async def user_signin(user_credentials: UserLoginModel, session: AsyncSession = 
         refresh=True
     )
     
-    return JSONResponse(
-        content={
-            'msg': 'Login success',
-            'status_code': 'success',
-            'access_token': access_token,
-            'refresh_token': refresh_token,
-            'user': {
-                'email': user_data.email,
-                'username': user_data.username
-            }
-        }
-    )
-    
+    return {
+        'msg': 'Login success',
+        'status_code': 'success',
+        'access_token': access_token,
+        'refresh_token': refresh_token,
+        'user': user_data
+    }
