@@ -8,6 +8,5 @@ class UserCreateModel(BaseModel):
     password: str = Field(min_length=8)
 
 class UserLoginModel(BaseModel):
-    username: Optional[str]
-    email: Optional[str]
+    identity: str
     password: str = Field(min_length=8)

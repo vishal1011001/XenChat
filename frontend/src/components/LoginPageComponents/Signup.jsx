@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from 'axios';
 
-export function Signup({ API_URL, setUserData }) {
+export function Signup({ AUTH_API_URL, setUserData }) {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -13,12 +13,12 @@ export function Signup({ API_URL, setUserData }) {
             'email': email,
             'username': username,
             'password': password
-        }
+        };
         try {
-            const response = await axios.post(`${API_URL}/auth/signup`, credentials);
+            const response = await axios.post(`${AUTH_API_URL}/signup`, credentials);
             if (response.status >= 200 && response.status < 300 ) {
                 const data = response.data;
-                setUserData(data);
+                setUserData(data.user);
                 console.log('registration successful');
             } else {
                 console.error(response.status, response.data);
