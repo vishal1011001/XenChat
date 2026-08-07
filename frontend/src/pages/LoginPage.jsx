@@ -3,8 +3,11 @@ import { Signin } from "../components/LoginPageComponents/Signin";
 import { OAuthOptions } from "../components/LoginPageComponents/OAuthOptions";
 import { Signup } from "../components/LoginPageComponents/Signup";
 import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
+
 
 export default function LoginPage() {
+    const navigate = useNavigate();
     const [wantToLogin, setWantToLogin] = useState(true);
     const AUTH_API_URL = 'http://localhost:8000/api/v1/auth';
     const [userData, setUserData] = useState({});
@@ -19,10 +22,12 @@ export default function LoginPage() {
             const response = await axios.post(`${AUTH_API_URL}/signin`, creds);
             if (response.status >= 200 && response.status < 300) {
                 const data = response.data;
-                if (data.status == 'success') {
-                    localStorage.setItem('access_token', data.access_token);
-                    localStorage.setItem('refresh_token', data.refresh_token);
+                if (data.status_code == 'success') {
+                    localStorage.setItem('xen_access_token', data.access_token);
+                    localStorage.setItem('xen_refresh_token', data.refresh_token);
                     setUserData(data.user);
+                    navigate('/');
+                    console.log(data);
                 }
             }
         } catch (error) {
@@ -32,8 +37,9 @@ export default function LoginPage() {
 
 
     return (
-        <div className="h-screen w-screen flex items-center justify-center bg-linear-90 from-stone-700 to-stone-600">
+        <div className="h-screen w-screen flex items-center justify-center bg-linear-90 from-gray-800 to-slate-800">
             <div className="flex flex-row items-center pl-5 pr-5 w-[60vw] h-[80vh] bg-white rounded-xl">
+                
                 <div className="w-[50%] h-full flex flex-col items-center justify-center p-4 pt-0">
                     
                     {wantToLogin ? (
@@ -55,6 +61,7 @@ export default function LoginPage() {
                 <div className="h-[95%] w-[50%]">
                     <img src="/login-bg1.jpg" className="rounded-xl h-full w-full" />
                 </div>
+
             </div>
         </div>
     );
