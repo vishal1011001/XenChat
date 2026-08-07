@@ -45,7 +45,7 @@ export default function LoginPage() {
                     {wantToLogin ? (
                         <Signin handleLogin={handleLogin} />
                     ) : (
-                        <Signup API_URL={AUTH_API_URL} setUserData={setUserData} />
+                        <Signup AUTH_API_URL={AUTH_API_URL} setUserData={setUserData} handleLogin={handleLogin}/>
                     )}
 
                     <p className="mt-4">

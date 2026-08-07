@@ -20,9 +20,13 @@ export function Signup({ AUTH_API_URL, setUserData, handleLogin }) {
                 const data = response.data;
                 setUserData(data.user);
                 console.log('registration successful');
-                handleLogin(credentials); // event passing
+                const creds = {
+                    'identity': email,
+                    'password': password
+                }
+                handleLogin(e, creds); // event passing
             } else {
-                console.error(response.status, response.data);
+                console.log(response.status, response.data);
                 throw new Error('Registration Failed');
             }
         } catch (error) {
