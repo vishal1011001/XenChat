@@ -13,7 +13,7 @@ export function Signin({ handleLogin }) {
     }
 
     return (
-        <form className="flex flex-col items-center justify-center gap-2">
+        <form onSubmit={signin} className="flex flex-col items-center justify-center gap-2">
             <h3 className="text-3xl mb-10 font-serif">Sign In</h3>
             <input 
                 value={identity}
@@ -25,8 +25,8 @@ export function Signin({ handleLogin }) {
                 placeholder="Password" className="p-3 bg-gray-200 rounded w-100 outline-0 focus-within:shadow-md shadow-orange-200" />
 
             <button
-                onClick={signin}
-                className="bg-orange-600 p-3 w-full rounded text-white font-bold">Login</button>
+                type="submit"
+                className="bg-red-900 p-3 w-full rounded text-white font-bold">Login</button>
         </form>
     );
 }

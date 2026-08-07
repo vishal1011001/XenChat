@@ -35,7 +35,7 @@ export function Signup({ AUTH_API_URL, setUserData, handleLogin }) {
     }
 
     return (
-        <form className="flex flex-col items-center justify-center gap-2">
+        <form onSubmit={handleRegister} className="flex flex-col items-center justify-center gap-2">
             <h3 className="text-3xl mb-5 font-serif">Sign Up</h3>
             <input 
                 value={email}
@@ -51,8 +51,8 @@ export function Signup({ AUTH_API_URL, setUserData, handleLogin }) {
                 placeholder="Create password" className="p-3 bg-gray-200 rounded w-100 focus:outline-1 outline-stone-800" />
 
             <button
-                onClick={handleRegister}
-                className="bg-orange-600 p-3 w-full rounded text-white font-bold"
+                type="submit"
+                className="bg-slate-600 p-3 w-full rounded text-white font-bold"
             >Register</button>
         </form>
     );

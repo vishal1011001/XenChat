@@ -37,7 +37,7 @@ export default function LoginPage() {
 
 
     return (
-        <div className="h-screen w-screen flex items-center justify-center bg-linear-90 from-gray-800 to-slate-800">
+        <div className="h-screen w-screen flex items-center justify-center bg-linear-90 from-red-950 via-red-900 to-red-950">
             <div className="flex flex-row items-center pl-5 pr-5 w-[60vw] h-[80vh] bg-white rounded-xl">
                 
                 <div className="w-[50%] h-full flex flex-col items-center justify-center p-4 pt-0">
