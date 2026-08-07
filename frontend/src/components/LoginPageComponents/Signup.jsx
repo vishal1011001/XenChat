@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from 'axios';
 
-export function Signup({ AUTH_API_URL, setUserData }) {
+export function Signup({ AUTH_API_URL, setUserData, handleLogin }) {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -20,6 +20,7 @@ export function Signup({ AUTH_API_URL, setUserData }) {
                 const data = response.data;
                 setUserData(data.user);
                 console.log('registration successful');
+                handleLogin(credentials); // event passing
             } else {
                 console.error(response.status, response.data);
                 throw new Error('Registration Failed');
@@ -31,6 +32,7 @@ export function Signup({ AUTH_API_URL, setUserData }) {
 
     return (
         <form className="flex flex-col items-center justify-center gap-2">
+            <h3 className="text-3xl mb-5 font-serif">Sign Up</h3>
             <input 
                 value={email}
                 onChange={(e) => (setEmail(e.target.value))}

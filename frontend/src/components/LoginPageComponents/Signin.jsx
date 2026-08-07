@@ -14,6 +14,7 @@ export function Signin({ handleLogin }) {
 
     return (
         <form className="flex flex-col items-center justify-center gap-2">
+            <h3 className="text-3xl mb-10 font-serif">Sign In</h3>
             <input 
                 value={identity}
                 onChange={(e) => (setIdentity(e.target.value))}
