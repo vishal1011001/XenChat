@@ -12,12 +12,25 @@ export default function LoginPage() {
     const AUTH_API_URL = 'http://localhost:8000/api/v1/auth';
     const [userData, setUserData] = useState({});
 
+    const [loginFailed, setLoginFailed] = useState(false);
+    const [loginErrorMessage, setLoginErrorMessage] = useState('Server error, try again later');
+
     const toggleWantToLogin = () => {
         setWantToLogin(!wantToLogin);
     }
 
     const handleLogin = async (e, creds) => {
         e?.preventDefault();
+        if (creds.identity.length < 1) {
+            setLoginFailed(true);
+            setLoginErrorMessage('Invalid email or username');
+            throw new Error('no id entered');
+        } else if (creds.password.length < 8) {
+            setLoginFailed(true);
+            setLoginErrorMessage('Incorrect password');
+            throw new Error('password too short');
+        } 
+
         try {
             const response = await axios.post(`${AUTH_API_URL}/signin`, creds);
             if (response.status >= 200 && response.status < 300) {
@@ -29,23 +42,28 @@ export default function LoginPage() {
                     navigate('/');
                     console.log(data);
                 }
+            } else {
+                throw new Error('login failed');
             }
         } catch (error) {
+            setLoginFailed(true);
+            setLoginErrorMessage(error.response.data.detail);
+            console.log(loginErrorMessage)
             console.error('Error singing in:', error)
         }
     };
 
 
     return (
-        <div className="h-screen w-screen flex items-center justify-center bg-linear-90 from-red-950 via-red-900 to-red-950">
+        <div className="h-screen w-screen flex items-center justify-center " style={{ "backgroundColor": "rgb(60,-250,-250)" }}>
             <div className="flex flex-row items-center pl-5 pr-5 w-[60vw] h-[80vh] bg-white rounded-xl">
-                
+
                 <div className="w-[50%] h-full flex flex-col items-center justify-center p-4 pt-0">
-                    
+
                     {wantToLogin ? (
-                        <Signin handleLogin={handleLogin} />
+                        <Signin handleLogin={handleLogin} loginFailed={loginFailed} loginErrorMessage={loginErrorMessage} />
                     ) : (
-                        <Signup AUTH_API_URL={AUTH_API_URL} setUserData={setUserData} handleLogin={handleLogin}/>
+                        <Signup AUTH_API_URL={AUTH_API_URL} setUserData={setUserData} handleLogin={handleLogin} />
                     )}
 
                     <p className="mt-4">

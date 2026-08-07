@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function Signin({ handleLogin }) {
+export function Signin({ handleLogin, loginFailed, loginErrorMessage }) {
     const [identity, setIdentity] = useState('');
     const [password, setPassword] = useState('');
 
@@ -18,11 +18,16 @@ export function Signin({ handleLogin }) {
             <input 
                 value={identity}
                 onChange={(e) => (setIdentity(e.target.value))}
-                placeholder="Email or Username" className="p-3 bg-gray-200 rounded w-100 focus:outline-1 outline-stone-800" />
+                placeholder="Email or Username" className="p-3 bg-gray-200 rounded w-100 focus:outline-1 outline-stone-800" 
+            />
             <input 
                 value={password}
                 onChange={(e) => (setPassword(e.target.value))}
-                placeholder="Password" className="p-3 bg-gray-200 rounded w-100 outline-0 focus-within:shadow-md shadow-orange-200" />
+                placeholder="Password" className="p-3 bg-gray-200 rounded w-100 outline-0 focus-within:shadow-md shadow-orange-200" 
+            />
+            {loginFailed && (
+                <p className="text-red-600">{loginErrorMessage}</p>
+            )}
 
             <button
                 type="submit"
