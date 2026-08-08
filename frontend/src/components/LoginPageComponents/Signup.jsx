@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from 'axios';
+import { signupCredsValidator } from "./utils";
 
-export function Signup({ AUTH_API_URL, setUserData, handleLogin }) {
+
+export function Signup({ AUTH_API_URL, setUserData, handleLogin, loginFailed, setLoginFailed, loginErrorMessage, setLoginErrorMessage }) {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -14,22 +16,29 @@ export function Signup({ AUTH_API_URL, setUserData, handleLogin }) {
             'username': username,
             'password': password
         };
+
+        if (!signupCredsValidator(credentials, setLoginFailed, setLoginErrorMessage)) {
+            throw new Error('Error in credentials');
+        }
+
         try {
             const response = await axios.post(`${AUTH_API_URL}/signup`, credentials);
             if (response.status >= 200 && response.status < 300 ) {
                 const data = response.data;
                 setUserData(data.user);
-                console.log('registration successful');
+                
                 const creds = {
                     'identity': email,
                     'password': password
                 }
-                handleLogin(e, creds); // event passing
+                handleLogin(e, creds);
             } else {
                 console.log(response.status, response.data);
                 throw new Error('Registration Failed');
             }
         } catch (error) {
+            setLoginFailed(true);
+            setLoginErrorMessage(error.response.data.detail);
             console.error('error signing up user: ', error);
         }
     }
@@ -40,19 +49,25 @@ export function Signup({ AUTH_API_URL, setUserData, handleLogin }) {
             <input 
                 value={email}
                 onChange={(e) => (setEmail(e.target.value))}
-                placeholder="Email" className="p-3 bg-gray-200 rounded w-100 focus:outline-1 outline-stone-800" />
+                placeholder="Email" className="p-3 bg-gray-200 rounded w-100 focus:outline-1 outline-stone-800" 
+            />
             <input 
                 value={username}
                 onChange={(e) => (setUsername(e.target.value))}
-                placeholder="Create username" className="p-3 bg-gray-200 rounded w-100 focus:outline-1 outline-stone-800" />
+                placeholder="Create username" className="p-3 bg-gray-200 rounded w-100 focus:outline-1 outline-stone-800" 
+            />
             <input 
                 value={password}
                 onChange={(e) => (setPassword(e.target.value))}
-                placeholder="Create password" className="p-3 bg-gray-200 rounded w-100 focus:outline-1 outline-stone-800" />
+                placeholder="Create password" className="p-3 bg-gray-200 rounded w-100 focus:outline-1 outline-stone-800" 
+            />
+            {loginFailed && (
+                <p className="text-red-600">{loginErrorMessage}</p>
+            )}
 
             <button
                 type="submit"
-                className="bg-slate-600 p-3 w-full rounded text-white font-bold"
+                className="bg-red-900 p-3 w-full rounded text-white font-bold"
             >Register</button>
         </form>
     );

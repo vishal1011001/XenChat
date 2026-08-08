@@ -4,7 +4,7 @@ import { OAuthOptions } from "../components/LoginPageComponents/OAuthOptions";
 import { Signup } from "../components/LoginPageComponents/Signup";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
-
+import { signinCredsValidator } from "../components/LoginPageComponents/utils";
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -17,19 +17,15 @@ export default function LoginPage() {
 
     const toggleWantToLogin = () => {
         setWantToLogin(!wantToLogin);
+        setLoginFailed(false);
     }
 
     const handleLogin = async (e, creds) => {
         e?.preventDefault();
-        if (creds.identity.length < 1) {
-            setLoginFailed(true);
-            setLoginErrorMessage('Invalid email or username');
-            throw new Error('no id entered');
-        } else if (creds.password.length < 8) {
-            setLoginFailed(true);
-            setLoginErrorMessage('Incorrect password');
-            throw new Error('password too short');
-        } 
+        
+        if (!signinCredsValidator(creds, setLoginFailed, setLoginErrorMessage)) {
+            throw new Error('Error in credentials')
+        }
 
         try {
             const response = await axios.post(`${AUTH_API_URL}/signin`, creds);
@@ -40,7 +36,6 @@ export default function LoginPage() {
                     localStorage.setItem('xen_refresh_token', data.refresh_token);
                     setUserData(data.user);
                     navigate('/');
-                    console.log(data);
                 }
             } else {
                 throw new Error('login failed');
@@ -51,7 +46,7 @@ export default function LoginPage() {
             console.log(loginErrorMessage)
             console.error('Error singing in:', error)
         }
-    };
+    };        
 
 
     return (
@@ -63,7 +58,7 @@ export default function LoginPage() {
                     {wantToLogin ? (
                         <Signin handleLogin={handleLogin} loginFailed={loginFailed} loginErrorMessage={loginErrorMessage} />
                     ) : (
-                        <Signup AUTH_API_URL={AUTH_API_URL} setUserData={setUserData} handleLogin={handleLogin} />
+                        <Signup AUTH_API_URL={AUTH_API_URL} setUserData={setUserData} handleLogin={handleLogin} loginFailed={loginFailed} setLoginFailed={setLoginFailed} loginErrorMessage={loginErrorMessage} setLoginErrorMessage={setLoginErrorMessage}/>
                     )}
 
                     <p className="mt-4">
