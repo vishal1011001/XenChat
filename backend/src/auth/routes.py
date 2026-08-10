@@ -97,3 +97,20 @@ async def user_signin(user_credentials: UserLoginModel, session: AsyncSession = 
         'refresh_token': refresh_token,
         'user': user_data
     }
+    
+@auth_router.get('/search/user/{username}')
+async def search_user(
+    username: str,                  
+    session: AsyncSession = Depends(get_session)
+):
+    user = await auth_service.get_user_by_username(username, session)
+    if user: 
+        return {
+            "message": "found"
+        }
+    else :
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='username not found'
+        )
+    
