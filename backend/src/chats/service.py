@@ -1,9 +1,8 @@
-from src.db.models import Message
-from .schemas import MessageModel
+from .schemas import MessageModel, ConvCreateModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
 from sqlmodel import select, desc
-from src.db.models import ConversationMember
+from src.db.models import User, Conversation, ConversationMember, Message 
 import uuid
 
 class ChatService():
@@ -31,6 +30,8 @@ class ChatService():
         '''
             Get all messages that belong to a user.
             Fetched during app startup on frontend (initialize)
+            
+            FUCNTION STILL UNDER CONSTRUCTION
         '''
         statement1 = select(ConversationMember.conv_uid).where(ConversationMember.user_uid == user_uid)
         result = await session.exec(statement1)
@@ -44,4 +45,48 @@ class ChatService():
         statement2 = select(Message).where(Message.conv_uid.in_(conv_uids)).order_by(desc(Message.sent_at))
         message_result = await session.exec(statement2)
         
-        return message_result.all()
+        statement3 = select(Conversation).where(Conversation.conv_uid.in_(conv_uids))
+        conv_result = await session.exec(statement3)
+        
+        statement4 = select(User.username).where(User.user_uid.in_(select(ConversationMember.user_uid).where(ConversationMember.conv_uid.in_(conv_uids))));
+        username_result = await session.exec(statement4)
+        
+        return {
+            'messages': message_result.all(),
+            'conversations': conv_result.all(),
+            'usernames': username_result.all()
+        }
+    
+    
+    async def create_conversation(self, conv_create_data: ConvCreateModel, session: AsyncSession):
+        '''
+            Creates a new conversation - dm or group chat
+        '''
+        
+        conv_create_dict = conv_create_data.model_dump()
+        users = conv_create_dict['users']
+        converstion_metadata = conv_create_dict['conversation_metadata']
+        
+        conversation = Conversation(**converstion_metadata)
+        session.add(conversation)
+        await session.commit()
+        
+        conv_uid = conversation.conv_uid
+        
+        for user in users:
+            username = user['username']
+            statement1 = select(User.user_uid).where(User.username == username)
+            res = await session.exec(statement1)
+            user["user_uid"] = res.first()
+            user["conv_uid"] = conv_uid
+            
+            member = ConversationMember(**user)
+            session.add(member)
+            
+        await session.commit()
+        
+        return {
+            "message": "success - created conversation"
+        }
+        
+        
