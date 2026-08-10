@@ -58,7 +58,7 @@ class ChatService():
         }
     
     
-    async def create_conversation(self, conv_create_data: ConvCreateModel, session: AsyncSession):
+    async def create_conversation(self, conv_create_data: ConvCreateModel, user_uid_of_creator: uuid.UUID, session: AsyncSession):
         '''
             Creates a new conversation - dm or group chat
         '''
@@ -66,6 +66,18 @@ class ChatService():
         conv_create_dict = conv_create_data.model_dump()
         users = conv_create_dict['users']
         converstion_metadata = conv_create_dict['conversation_metadata']
+        
+        creator_username = users[0]['username']
+        statement0 = select(User.user_uid).where(User.username == creator_username)
+        res = await session.exec(statement0)
+        creator_user_uid = str(res.first())
+        
+        if creator_user_uid != user_uid_of_creator:
+            print(creator_user_uid)
+            print(user_uid_of_creator)
+            return {
+                "message": "unauthorized"
+            }
         
         conversation = Conversation(**converstion_metadata)
         session.add(conversation)
