@@ -38,7 +38,7 @@ export function Chats({ conversations }) {
             <FilterButtons />
             
             <div className="p-2.5 pt-0 flex flex-col gap-1">
-                {conversations.map((chat) => (
+                {chatsArr.map((chat) => (
                     <div key={chat.conv_uid} className="flex flex-row pl-3 p-1 hover:bg-slate-700 rounded-xl mr-4">
                         <img src={`/pfp1.png`} className="h-10 rounded-full self-center" />
                         <div>
