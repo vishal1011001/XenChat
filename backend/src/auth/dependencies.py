@@ -24,11 +24,11 @@ class TokenBearer(HTTPBearer):
         token_data = await decode_token(token)
         
         if not token_data:
-            raise HTTPExceptions(status_code=status.HTTP_401_UNAUTHORIZED,
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                  detail='invalid token')
         
         if await check_token_in_blocklist(token_data['jti']):
-            raise HTTPExceptions(status_code=status.HTTP_401_UNAUTHORIZED,
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                  detail='expired token')
         
         self.verify_token_type(token_data)
