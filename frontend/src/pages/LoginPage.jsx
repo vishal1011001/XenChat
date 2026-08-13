@@ -10,7 +10,10 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const [wantToLogin, setWantToLogin] = useState(true);
     const AUTH_API_URL = 'http://localhost:8000/api/v1/auth';
-    const [userData, setUserData] = useState({});
+    const [userData, setUserData] = useState(() => {
+        const raw = localStorage.getItem('xen_user_data');
+        return raw ? JSON.parse(raw) : null;
+    });
 
     const [loginFailed, setLoginFailed] = useState(false);
     const [loginErrorMessage, setLoginErrorMessage] = useState('Server error, try again later');
@@ -34,6 +37,7 @@ export default function LoginPage() {
                 if (data.status_code == 'success') {
                     localStorage.setItem('xen_access_token', data.access_token);
                     localStorage.setItem('xen_refresh_token', data.refresh_token);
+                    localStorage.setItem('xen_user_data', JSON.stringify(data.user));
                     setUserData(data.user);
                     navigate('/');
                 }
@@ -42,7 +46,7 @@ export default function LoginPage() {
             }
         } catch (error) {
             setLoginFailed(true);
-            setLoginErrorMessage(error.response.data.detail);
+            setLoginErrorMessage(error.response?.data?.detail);
             console.log(loginErrorMessage)
             console.error('Error singing in:', error)
         }
