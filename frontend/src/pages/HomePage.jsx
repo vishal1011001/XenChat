@@ -19,7 +19,7 @@ export default function HomePage(){
             });
             if (response.status >= 200 && response.status < 300) {
                 const data = response.data;
-                setConversations(data);
+                setConversations(data.conversations);
             } else {
                 throw new Error('Error fetching conversations')
             }
