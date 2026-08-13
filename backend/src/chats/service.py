@@ -26,36 +26,61 @@ class ChatService():
             member_uids.append(member.user_uid)
         return member_uids
     
-    async def get_messages_of_user(self, user_uid: uuid.UUID, session: AsyncSession):
+    
+    async def get_all_conv_uids_of_user(self, user_uid: uuid.UUID, session: AsyncSession):
+        '''
+            Returns conv_uids of all conversations that user is a part of.
+            Relation in use: ConversationMember
+        '''
+        statement_conv_uids = select(ConversationMember.conv_uid).where(ConversationMember.user_uid == user_uid)
+        result = await session.exec(statement_conv_uids)
+        
+        #converting sql result object instance to python iterable
+        conv_uids = [row[0] if isinstance(row, tuple) else row for row in result.all()]
+
+        return conv_uids if conv_uids else []
+    
+    
+    async def get_all_chats_of_user(self, user_uid: uuid.UUID, session: AsyncSession):
         '''
             Get all messages that belong to a user.
             Fetched during app startup on frontend (initialize)
             
             FUCNTION STILL UNDER CONSTRUCTION
         '''
-        statement1 = select(ConversationMember.conv_uid).where(ConversationMember.user_uid == user_uid)
-        result = await session.exec(statement1)
-        
-        #converting sql result object instance to python iterable
-        conv_uids = [row[0] if isinstance(row, tuple) else row for row in result.all()]
-        
-        if not conv_uids:
-            return []
-        
-        statement2 = select(Message).where(Message.conv_uid.in_(conv_uids)).order_by(desc(Message.sent_at))
-        message_result = await session.exec(statement2)
-        
-        statement3 = select(Conversation).where(Conversation.conv_uid.in_(conv_uids))
-        conv_result = await session.exec(statement3)
-        
-        statement4 = select(User.username).where(User.user_uid.in_(select(ConversationMember.user_uid).where(ConversationMember.conv_uid.in_(conv_uids))));
-        username_result = await session.exec(statement4)
-        
+        conv_uids = await self.get_all_conversations_of_user(user_uid, session)
+
+        all_chats = []
+        for conv_uid in conv_uids:
+            statement_usernames = select(User.username).where(User.user_uid.in_(select(ConversationMember.user_uid).where(ConversationMember.conv_uid == conv_uid)));
+            usernames_result = await session.exec(statement_usernames)
+            
+            statement_conv_metadata = select(Conversation).where(Conversation.conv_uid == conv_uid)
+            conv_metadata_result = await session.exec(statement_conv_metadata)
+            
+            messages = await self.get_messages_of_conv(conv_uid, session)
+            
+            all_chats.append({
+                "conv_uid": conv_uid,
+                "conv_metadata": conv_metadata_result.first(),
+                "member_usernames": usernames_result.all(), # list or object uncertainity
+                "messages": messages
+            })
+            
         return {
-            'messages': message_result.all(),
-            'conversations': conv_result.all(),
-            'usernames': username_result.all()
+            "conversations": all_chats
         }
+    
+    
+    async def get_messages_of_conv(self, conv_uid: uuid.UUID, session: AsyncSession):
+        '''
+            Get all messages that belongs to a conversation
+        '''
+        statement_messages = select(Message).where(Message.conv_uid == conv_uid).order_by(desc(Message.sent_at))
+        message_result = await session.exec(statement_messages)
+        
+        return message_result.all()
+        
     
     
     async def create_conversation(self, conv_create_data: ConvCreateModel, user_uid_of_creator: uuid.UUID, session: AsyncSession):
