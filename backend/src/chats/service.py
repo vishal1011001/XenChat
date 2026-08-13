@@ -48,12 +48,16 @@ class ChatService():
             
             FUCNTION STILL UNDER CONSTRUCTION
         '''
-        conv_uids = await self.get_all_conversations_of_user(user_uid, session)
+        conv_uids = await self.get_all_conv_uids_of_user(user_uid, session)
 
+        curr_user_name = await session.exec(select(User.username).where(User.user_uid == user_uid))
+        curr_user_name = curr_user_name.first()
         all_chats = []
         for conv_uid in conv_uids:
             statement_usernames = select(User.username).where(User.user_uid.in_(select(ConversationMember.user_uid).where(ConversationMember.conv_uid == conv_uid)));
             usernames_result = await session.exec(statement_usernames)
+            usernames_result = usernames_result.all()
+            usernames_result.remove(curr_user_name)
             
             statement_conv_metadata = select(Conversation).where(Conversation.conv_uid == conv_uid)
             conv_metadata_result = await session.exec(statement_conv_metadata)
@@ -63,7 +67,7 @@ class ChatService():
             all_chats.append({
                 "conv_uid": conv_uid,
                 "conv_metadata": conv_metadata_result.first(),
-                "member_usernames": usernames_result.all(), # list or object uncertainity
+                "member_usernames": usernames_result, # list or object uncertainity
                 "messages": messages
             })
             
