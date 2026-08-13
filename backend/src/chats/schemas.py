@@ -36,5 +36,5 @@ class ConversationResponseModel(BaseModel):
     member_usernames: List[str]
     messages: List[MessageResponseModel]
     
-class RetrieveAllConvResponseModel(BaseModel):
+class RetrieveAllChatsResponseModel(BaseModel):
     conversations: List[ConversationResponseModel]

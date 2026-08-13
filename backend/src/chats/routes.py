@@ -5,7 +5,7 @@ from src.auth.dependencies import AccessTokenBearer
 from src.auth.service import AuthService
 from src.db.main import get_session
 from .service import ChatService
-from .schemas import ConvCreateModel
+from .schemas import ConvCreateModel, RetrieveAllChatsResponseModel
 from fastapi.exceptions import HTTPException
 
 auth_service = AuthService()
@@ -14,7 +14,7 @@ chat_service = ChatService()
 chat_router = APIRouter()
 access_token_bearer = AccessTokenBearer()        
     
-@chat_router.get('/')
+@chat_router.get('/', response_model=RetrieveAllChatsResponseModel)
 async def get_chats_of_user(
     token_data: dict = Depends(access_token_bearer),
     session: AsyncSession = Depends(get_session)
@@ -23,7 +23,7 @@ async def get_chats_of_user(
     user = await auth_service.get_user_by_email(email, session)
     user_uid = user.user_uid
     
-    result = await chat_service.get_messages_of_user(user_uid, session)
+    result = await chat_service.get_all_chats_of_user(user_uid, session)
     return result 
 
 @chat_router.post('/create/conversation')
