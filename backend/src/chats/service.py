@@ -1,7 +1,7 @@
 from .schemas import MessageModel, ConvCreateModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
-from sqlmodel import select, desc
+from sqlmodel import select, desc, asc
 from src.db.models import User, Conversation, ConversationMember, Message 
 import uuid
 
@@ -14,6 +14,7 @@ class ChatService():
         session.add(msg)
         await session.commit()
         await session.refresh(msg)
+        return msg
         
     async def conv_members(self, conv_uid: uuid.UUID, session: AsyncSession) -> List:
         '''
@@ -45,8 +46,6 @@ class ChatService():
         '''
             Get all messages that belong to a user.
             Fetched during app startup on frontend (initialize)
-            
-            FUCNTION STILL UNDER CONSTRUCTION
         '''
         conv_uids = await self.get_all_conv_uids_of_user(user_uid, session)
 
@@ -80,7 +79,7 @@ class ChatService():
         '''
             Get all messages that belongs to a conversation
         '''
-        statement_messages = select(Message).where(Message.conv_uid == conv_uid).order_by(desc(Message.sent_at))
+        statement_messages = select(Message).where(Message.conv_uid == conv_uid).order_by(asc(Message.sent_at))
         message_result = await session.exec(statement_messages)
         
         return message_result.all()

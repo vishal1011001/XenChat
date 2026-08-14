@@ -49,12 +49,13 @@ class ConnectionManager:
         self.active_connections.append(new_conn)
         
     async def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
         
-    async def send_personal_message(self, message:str, websocket: WebSocket):
-        await websocket.send_text(str(message))
+    async def send_personal_message(self, message:dict, websocket: WebSocket):
+        await websocket.send_json(message)
         
-    async def broadcast(self, member_uids: List, message: str):
+    async def broadcast(self, member_uids: List, message: dict):
         receivers = []
         for member_uid in member_uids:
             receiver = await self.find_connection(member_uid)
@@ -76,7 +77,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id):
             
             #saving message in database
             async with session_factory() as session:
-                new_msg = await chat_service.register_message(
+                new_msg_obj = await chat_service.register_message(
                     message=data,
                     session=session
                 )
@@ -84,13 +85,21 @@ async def websocket_endpoint(websocket: WebSocket, client_id):
             #broadcasting message to all conversation members - that are online
             conv_uid = data['conv_uid']
             message = data['content']
+            
+            new_msg_payload = {
+                "message_uid": str(new_msg_obj.message_uid),
+                "content": new_msg_obj.content,
+                "conv_uid": str(new_msg_obj.conv_uid),
+                "sender_uid": str(new_msg_obj.sender_uid),
+                "sent_at": new_msg_obj.sent_at.isoformat() if new_msg_obj.sent_at else None
+            }
+            
             member_uids = await chat_service.conv_members(conv_uid, session)
 
-            await manager.broadcast(member_uids, message)
+            await manager.broadcast(member_uids, new_msg_payload)
             
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
-        await manager.broadcast(f"{client_id} left the chat.")
     
 register_middleware(app)
 
