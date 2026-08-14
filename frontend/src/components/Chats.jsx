@@ -2,7 +2,11 @@ import { FilterButtons } from "./ChatsComponents/FilterButtons";
 import { SearchBar } from "./ChatsComponents/SearchBar";
 
 
-export function Chats({ conversations }) {
+export function Chats({ conversations, setActiveConvUid }) {
+
+    const changeActiveConvUid = (conv_uid) => {
+        setActiveConvUid(conv_uid)
+    }
 
     const chatsArr = [
         {
@@ -40,11 +44,13 @@ export function Chats({ conversations }) {
             <div className="overflow-y-scroll  scroll scroll-auto scrollbar-none">
                 <div className="p-2 pt-0 flex flex-col gap-2">
                     {conversations.map((chat) => (
-                        <div key={chat.conv_uid} className="flex flex-row pl-3 p-2 hover:bg-slate-700 rounded-xl mr-4">
+                        <div key={chat.conv_uid}
+                            onClick={() => changeActiveConvUid(chat.conv_uid)}
+                            className="flex flex-row pl-3 p-2 hover:bg-slate-700 rounded-xl mr-4">
                             <img src={`/pfp1.png`} className="h-10 rounded-full self-center" />
                             <div>
                                 <p className="text-xl text-white font-bold pl-4">@{chat.member_usernames.join(', @')}</p>
-                                <p className="text-gray-200 pl-4 line-clamp-1">{chat.messages[0]?.content}</p>
+                                <p className="text-gray-400 pl-4 line-clamp-1">{chat.messages[chat.messages.length-1]?.content}</p>
                             </div>
                         </div>
                     ))}
