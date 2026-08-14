@@ -3,11 +3,16 @@ import { Chats } from "../components/Chats";
 import { Sidebar } from "../components/Sidebar";
 import axios from 'axios';
 import { useEffect, useState } from "react";
+import { useWebSocket } from "../hooks/useWebSocket";
 
 
 export default function HomePage(){
     const API_URL = 'http://localhost:8000/api/v1';
     const [conversations, setConversations] = useState([]);
+    const [activeConvUid, setActiveConvUid] = useState('');
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [messagesToDisplay, setMessagesToDisplay] = useState([]);
+
 
     const retrieveChats = async (e) => {
         try {
@@ -29,14 +34,21 @@ export default function HomePage(){
     }
 
     useEffect(() => {
+        const activeConv = conversations.find(conv => conv.conv_uid == activeConvUid);
+        setMessagesToDisplay(activeConv?.messages || []);
+        setIsChatOpen(true);
+        console.log(activeConv?.messages);
+    }, [activeConvUid]);
+
+    useEffect(() => {
         retrieveChats();
     }, []);
 
     return (
         <div className="h-screen w-screen flex flex-row">
             <Sidebar />
-            <Chats conversations={conversations}/>
-            <ChatArea />
+            <Chats conversations={conversations} setActiveConvUid={setActiveConvUid}/>
+            <ChatArea messagesToDisplay={messagesToDisplay} setMessagesToDisplay={setMessagesToDisplay} activeConvUid={activeConvUid}/>
         </div>
     );
 }
