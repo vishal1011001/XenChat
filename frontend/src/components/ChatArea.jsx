@@ -1,8 +1,9 @@
 import { HeaderBar } from "./ChatAreaComponents/HeaderBar";
 import { MessageCompose } from "./ChatAreaComponents/MessageCompose";
 import { Messages } from "./ChatAreaComponents/Messages";
+import { useWebSocket } from "../hooks/useWebSocket";
 
-export function ChatArea() {
+export function ChatArea({ messagesToDisplay, setMessagesToDisplay, activeConvUid }) {
 
     const messages = [
         {
@@ -193,14 +194,16 @@ export function ChatArea() {
         }
     ];
 
+    const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
+    const sendMessage = useWebSocket(currUserUid, messagesToDisplay, setMessagesToDisplay);
 
     return (
         <div className="h-screen bg-[url('/chat-bg.jpg')] bg-cover bg-fixed w-full flex flex-col justify-between pb-2 pt-15 overflow-scroll scrollbar-none scroll-auto scroll">
             <HeaderBar />
 
-            <Messages messages={messages} />
+            <Messages messagesToDisplay={messagesToDisplay} currUserUid={currUserUid}/>
             
-            <MessageCompose />
+            <MessageCompose sendMessage={sendMessage} currUserUid={currUserUid} activeConvUid={activeConvUid}/>
         </div>
     );
 }
