@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 
-export function useWebSocket(userUid, messagesToDisplay, setMessagesToDisplay) {
+export function useWebSocket(userUid, setMessages) {
     const socketRef = useRef(null);
 
     useEffect(() => {
@@ -14,11 +14,9 @@ export function useWebSocket(userUid, messagesToDisplay, setMessagesToDisplay) {
         }
 
         socket.onmessage = (event) => {
-            const message =JSON.parse(event.data);
+            const message = JSON.parse(event.data);
 
-            setMessagesToDisplay(prevMessages => [...prevMessages, message]);
-
-            console.log('message received:', message);
+            setMessages(prevM => [...prevM, message]);
         }
 
         socket.onerror = (error) => {
