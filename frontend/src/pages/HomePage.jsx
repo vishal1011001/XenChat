@@ -9,10 +9,19 @@ import { useWebSocket } from "../hooks/useWebSocket";
 export default function HomePage(){
     const API_URL = 'http://localhost:8000/api/v1';
     const [conversations, setConversations] = useState([]);
-    const [activeConvUid, setActiveConvUid] = useState('');
-    const [isChatOpen, setIsChatOpen] = useState(false);
-    const [messagesToDisplay, setMessagesToDisplay] = useState([]);
+    const [messages, setMessages] = useState([]);
 
+    const [activeConvUid, setActiveConvUid] = useState('');
+    const [messagesToDisplay, setMessagesToDisplay] = useState([]);
+    const [isChatOpen, setIsChatOpen] = useState(false);
+
+    // const convMessagesUpdater = (conv_uid, message) => {
+    //     const convToUpdate = conversations.find(conv => conv.conv_uid === conv_uid);
+    //     convToUpdate?.messages?.push(message);
+    // }
+
+    const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
+    const sendMessage = useWebSocket(currUserUid, setMessages);
 
     const retrieveChats = async (e) => {
         try {
@@ -25,6 +34,7 @@ export default function HomePage(){
             if (response.status >= 200 && response.status < 300) {
                 const data = response.data;
                 setConversations(data.conversations);
+                setMessages(data.messages);
             } else {
                 throw new Error('Error fetching conversations')
             }
@@ -34,11 +44,10 @@ export default function HomePage(){
     }
 
     useEffect(() => {
-        const activeConv = conversations.find(conv => conv.conv_uid == activeConvUid);
-        setMessagesToDisplay(activeConv?.messages || []);
+        const messagesFiltered = messages.filter(message => message.conv_uid === activeConvUid);
+        setMessagesToDisplay(messagesFiltered);
         setIsChatOpen(true);
-        console.log(activeConv?.messages);
-    }, [activeConvUid]);
+    }, [activeConvUid, messages]);
 
     useEffect(() => {
         retrieveChats();
@@ -48,7 +57,7 @@ export default function HomePage(){
         <div className="h-screen w-screen flex flex-row">
             <Sidebar />
             <Chats conversations={conversations} setActiveConvUid={setActiveConvUid}/>
-            <ChatArea messagesToDisplay={messagesToDisplay} setMessagesToDisplay={setMessagesToDisplay} activeConvUid={activeConvUid}/>
+            <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messagesToDisplay={messagesToDisplay} activeConvUid={activeConvUid}/>
         </div>
     );
 }
