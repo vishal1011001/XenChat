@@ -51,7 +51,7 @@ class ChatService():
 
         curr_user_name = await session.exec(select(User.username).where(User.user_uid == user_uid))
         curr_user_name = curr_user_name.first()
-        all_chats = []
+        all_conversations = []
         for conv_uid in conv_uids:
             statement_usernames = select(User.username).where(User.user_uid.in_(select(ConversationMember.user_uid).where(ConversationMember.conv_uid == conv_uid)));
             usernames_result = await session.exec(statement_usernames)
@@ -61,19 +61,30 @@ class ChatService():
             statement_conv_metadata = select(Conversation).where(Conversation.conv_uid == conv_uid)
             conv_metadata_result = await session.exec(statement_conv_metadata)
             
-            messages = await self.get_messages_of_conv(conv_uid, session)
-            
-            all_chats.append({
+            all_conversations.append({
                 "conv_uid": conv_uid,
                 "conv_metadata": conv_metadata_result.first(),
-                "member_usernames": usernames_result, # list or object uncertainity
-                "messages": messages
+                "member_usernames": usernames_result
             })
-            
+
+
+        messages = await self.get_messages_of_user(conv_uids, session)
+        
         return {
-            "conversations": all_chats
+            "conversations": all_conversations,
+            "messages": messages
         }
     
+    
+    async def get_messages_of_user(self, conv_uids: List[uuid.UUID], session: AsyncSession):
+        '''
+            Get all messages that belong to a user (as sender or receiver both)
+        '''
+        statement_messages = select(Message).where(Message.conv_uid.in_(conv_uids)).order_by(asc(Message.sent_at))
+        message_result = await session.exec(statement_messages)
+        
+        return message_result.all()
+        
     
     async def get_messages_of_conv(self, conv_uid: uuid.UUID, session: AsyncSession):
         '''

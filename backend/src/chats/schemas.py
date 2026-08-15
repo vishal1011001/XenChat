@@ -27,6 +27,7 @@ class ConversationMetadataResponseModel(ConversationMetadata):
 class MessageResponseModel(BaseModel):
     message_uid: uuid.UUID
     content: str
+    conv_uid: uuid.UUID
     sender_uid: uuid.UUID
     sent_at: datetime
     
@@ -34,7 +35,7 @@ class ConversationResponseModel(BaseModel):
     conv_uid: uuid.UUID
     conv_metadata: ConversationMetadataResponseModel
     member_usernames: List[str]
-    messages: List[MessageResponseModel]
     
 class RetrieveAllChatsResponseModel(BaseModel):
     conversations: List[ConversationResponseModel]
+    messages: List[MessageResponseModel]
