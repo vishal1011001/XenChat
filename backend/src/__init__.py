@@ -45,15 +45,21 @@ class ConnectionManager:
         
     async def connect(self, websocket: WebSocket, client_id: uuid.UUID):
         await websocket.accept()
+        self.active_connections = [c for c in self.active_connections if c.client_id != client_id]
         new_conn = SocketConnection(client_id, websocket)
         self.active_connections.append(new_conn)
         
     async def disconnect(self, websocket: WebSocket):
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
+        for conn in self.active_connections:
+            if conn.websocket == websocket:
+                self.active_connections.remove(conn)
+                break
         
     async def send_personal_message(self, message:dict, websocket: WebSocket):
-        await websocket.send_json(message)
+        try:
+            await websocket.send_json(message)
+        except Exception:
+            await self.disconnect(websocket)
         
     async def broadcast(self, member_uids: List, message: dict):
         receivers = []
