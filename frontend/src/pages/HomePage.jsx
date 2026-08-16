@@ -15,11 +15,6 @@ export default function HomePage(){
     const [messagesToDisplay, setMessagesToDisplay] = useState([]);
     const [isChatOpen, setIsChatOpen] = useState(false);
 
-    // const convMessagesUpdater = (conv_uid, message) => {
-    //     const convToUpdate = conversations.find(conv => conv.conv_uid === conv_uid);
-    //     convToUpdate?.messages?.push(message);
-    // }
-
     const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
     const sendMessage = useWebSocket(currUserUid, setMessages);
 
@@ -52,6 +47,28 @@ export default function HomePage(){
     useEffect(() => {
         retrieveChats();
     }, []);
+
+    useEffect(() => {
+        if (!conversations || conversations.length === 0) return;
+
+        const newConvs = conversations.map(conv => {
+            const convMessages = messages.filter(m => m.conv_uid === conv.conv_uid);
+            if (convMessages.length === 0) return conv;
+
+            const latest = convMessages.reduce((a, b) => {
+                const ta = a.sent_at ? new Date(a.sent_at) : new Date(0);
+                const tb = b.sent_at ? new Date(b.sent_at) : new Date(0); 
+                return (ta > tb) ? a : b;
+            })
+
+            return {...conv, last_message: latest.content};
+        })
+
+        const changed = JSON.stringify(conversations) !== JSON.stringify(newConvs);
+        if (changed) {
+            setConversations(newConvs)
+        }
+    }, [conversations, messages]);
 
     return (
         <div className="h-screen w-screen flex flex-row">
