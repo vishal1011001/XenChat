@@ -5,7 +5,7 @@ import { SearchBar } from "./ChatsComponents/SearchBar";
 export function Chats({ conversations, setActiveConvUid }) {
 
     const changeActiveConvUid = (conv_uid) => {
-        setActiveConvUid(conv_uid)
+        setActiveConvUid(conv_uid);
     }
 
     const chatsArr = [
@@ -50,7 +50,7 @@ export function Chats({ conversations, setActiveConvUid }) {
                             <img src={`/pfp1.png`} className="h-10 rounded-full self-center" />
                             <div>
                                 <p className="text-xl text-white font-bold pl-4">@{chat.member_usernames.join(', @')}</p>
-                                <p className="text-gray-400 pl-4 line-clamp-1">{chat.messages[chat.messages.length-1]?.content}</p>
+                                <p className="text-gray-400 pl-4 line-clamp-1">{chat.last_message}</p>
                             </div>
                         </div>
                     ))}
