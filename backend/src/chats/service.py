@@ -102,28 +102,24 @@ class ChatService():
             Creates a new conversation - dm or group chat
         '''
         
+        # extracting data
         conv_create_dict = conv_create_data.model_dump()
         users = conv_create_dict['users']
         converstion_metadata = conv_create_dict['conversation_metadata']
         
+        # fasle id conv creation check
         creator_username = users[0]['username']
-        statement0 = select(User.user_uid).where(User.username == creator_username)
-        res = await session.exec(statement0)
-        creator_user_uid = str(res.first())
+        false_id = await self.fasle_id_creator_check(creator_username, user_uid_of_creator, session)
+        if false_id:
+            return "unauthorized"
         
-        if creator_user_uid != user_uid_of_creator:
-            print(creator_user_uid)
-            print(user_uid_of_creator)
-            return {
-                "message": "unauthorized"
-            }
-        
+        # creating conversation
         conversation = Conversation(**converstion_metadata)
         session.add(conversation)
         await session.commit()
-        
+
+        # creating entries in conversation_member table
         conv_uid = conversation.conv_uid
-        
         for user in users:
             username = user['username']
             statement1 = select(User.user_uid).where(User.username == username)
@@ -136,8 +132,32 @@ class ChatService():
             
         await session.commit()
         
-        return {
-            "message": "success - created conversation"
+        # returning response after conversation creation
+        member_usernames = []
+        for user in users:
+            if user['username'] != creator_username:
+                member_usernames.append(user['username'])
+        
+        conversation_response = {
+            "conv_uid": conv_uid,
+            "conv_metadata": {
+                "conv_type": conversation.conv_type,
+                "member_count": conversation.member_count,
+                "created_at": conversation.created_at,
+                "updated_at": conversation.updated_at
+            },
+            "member_usernames": member_usernames
         }
         
+        return conversation_response
+    
         
+    async def fasle_id_creator_check(self, creator_username: uuid.UUID, user_uid_of_creator: uuid.UUID, session: AsyncSession):
+        '''
+            Checks if a user is trying to create a conversation between 2 users w/o himself being involved
+        '''
+        statement0 = select(User.user_uid).where(User.username == creator_username)
+        res = await session.exec(statement0)
+        creator_user_uid = str(res.first())
+        
+        return True if (creator_user_uid != user_uid_of_creator) else False;

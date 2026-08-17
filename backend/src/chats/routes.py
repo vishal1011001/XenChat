@@ -5,7 +5,7 @@ from src.auth.dependencies import AccessTokenBearer
 from src.auth.service import AuthService
 from src.db.main import get_session
 from .service import ChatService
-from .schemas import ConvCreateModel, RetrieveAllChatsResponseModel
+from .schemas import ConvCreateModel, RetrieveAllChatsResponseModel, ConversationResponseModel
 from fastapi.exceptions import HTTPException
 
 auth_service = AuthService()
@@ -26,7 +26,8 @@ async def get_chats_of_user(
     result = await chat_service.get_all_chats_of_user(user_uid, session)
     return result 
 
-@chat_router.post('/create/conversation')
+
+@chat_router.post('/create/conversation', response_model=ConversationResponseModel)
 async def create_conversation(
     conv_create_data: ConvCreateModel,
     token_data: dict = Depends(access_token_bearer),
@@ -34,7 +35,7 @@ async def create_conversation(
 ):  
     user_uid_of_creator = token_data['user']['uid']
     response = await chat_service.create_conversation(conv_create_data, user_uid_of_creator, session)
-    if response['message'] == 'unauthorized':
+    if response == 'unauthorized':
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="You are not authorized to create conversation with false id")
     
