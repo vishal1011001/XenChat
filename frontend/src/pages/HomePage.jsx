@@ -72,7 +72,7 @@ export default function HomePage(){
 
     return (
         <div className="h-screen w-screen flex flex-row">
-            <Sidebar />
+            <Sidebar setConversations={setConversations} API_URL={API_URL}/>
             <Chats conversations={conversations} setActiveConvUid={setActiveConvUid}/>
             <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messagesToDisplay={messagesToDisplay} activeConvUid={activeConvUid}/>
         </div>

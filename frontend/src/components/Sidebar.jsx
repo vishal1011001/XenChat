@@ -1,8 +1,8 @@
 import {useNavigate} from 'react-router-dom';
 import {useState} from 'react';
-import { StartNewConversation } from './SidebarComponents/StartNewConversation';
+import { StartNewConversation } from './SidebarComponents/StartNewConversation'; 
 
-export function Sidebar() {
+export function Sidebar({setConversations, API_URL}) {
     const navigate = useNavigate()
     const handleLogout = () => {
         localStorage.removeItem('xen_access_token');
@@ -31,7 +31,7 @@ export function Sidebar() {
                     <img src="/add.png" className="invert-100"/>
                 </button>
                 {wantToStartConv && (
-                    <StartNewConversation />
+                    <StartNewConversation setConversations={setConversations} API_URL={API_URL}/>
                 )}
                 <button onClick={handleLogout}>
                     <img src='/logout.png' className='h-7 invert-100'/>
