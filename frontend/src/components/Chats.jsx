@@ -3,32 +3,10 @@ import { SearchBar } from "./ChatsComponents/SearchBar";
 
 
 export function Chats({ conversations, setActiveConvUid }) {
-
+    
     const changeActiveConvUid = (conv_uid) => {
         setActiveConvUid(conv_uid);
     }
-
-    const chatsArr = [
-        {
-            uid: "123456",
-            name: "Vishal Jakhar",
-            last_message: "Hey! How are you?",
-            pfp: "pfp1"
-        },
-        {
-            uid: "123457",
-            name: "Papa",
-            last_message: "Good Morning",
-            pfp: "pfp2"
-        },
-        {
-            uid: "123458",
-            name: "XenAi",
-            last_message: "Hey there, Ready when you are.",
-            pfp: "pfp3"
-        }
-    ];
-
 
     return (
         <div className="h-screen w-[35vw] bg-slate-900 flex flex-col">

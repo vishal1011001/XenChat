@@ -8,13 +8,14 @@ import { signinCredsValidator } from "../components/LoginPageComponents/utils";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const [wantToLogin, setWantToLogin] = useState(true);
     const AUTH_API_URL = 'http://localhost:8000/api/v1/auth';
+
     const [userData, setUserData] = useState(() => {
         const raw = localStorage.getItem('xen_user_data');
         return raw ? JSON.parse(raw) : null;
     });
-
+    
+    const [wantToLogin, setWantToLogin] = useState(true);
     const [loginFailed, setLoginFailed] = useState(false);
     const [loginErrorMessage, setLoginErrorMessage] = useState('Server error, try again later');
 
