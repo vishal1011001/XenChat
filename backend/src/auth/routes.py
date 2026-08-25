@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlmodel.ext.asyncio.session import AsyncSession
 from ..db.main import get_session
+from ..db.redis import add_jti_to_blocklist
 from .service import AuthService
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
@@ -9,7 +10,7 @@ from .utils import verify_password_hash, create_access_token
 from datetime import timedelta
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from .dependencies import RefreshTokenBearer
+from .dependencies import AccessTokenBearer, RefreshTokenBearer
 
 auth_router = APIRouter()
 auth_service = AuthService()
@@ -139,8 +140,19 @@ async def get_new_access_token(
         refresh=True
     )
     
+    await add_jti_to_blocklist(refresh_token_data)
+    
     return {
         'status_code': 'refresh success',
         'access_token': new_access_token,
         'refresh_token': new_refresh_token,
+    }
+    
+@auth_router.post('/logout')
+async def logout_user(
+    token_data: dict = Depends(RefreshTokenBearer())
+):
+    await add_jti_to_blocklist(token_data)
+    return {
+        'message': "logged out"     
     }
