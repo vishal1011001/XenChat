@@ -18,7 +18,32 @@ export default function HomePage(){
     const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
     const sendMessage = useWebSocket(currUserUid, setMessages);
 
+
+    const handleRefreshToken = async (e) => {
+        e?.preventDefault();
+        try {
+            const ref_token = localStorage.getItem('xen_refresh_token');
+            const response = await axios.get(`${API_URL}/auth/refresh_token`, {
+                headers: {
+                    Authorization: `Bearer ${ref_token}`
+                }
+            });
+
+            if (response.status >= 200 && response.status < 300) {
+                const data = response.data;
+                if (data.status_code === 'refresh success') {
+                    localStorage.setItem('xen_access_token', data.access_token);
+                    localStorage.setItem('xen_refresh_token', data.refresh_token);
+                    retrieveChats();
+                }
+            }
+        } catch (error) {
+            console.error("Error Refreshing tokens:", error);
+        }
+    }
+
     const retrieveChats = async (e) => {
+        e?.preventDefault();
         try {
             const token = localStorage.getItem('xen_access_token');
             const response = await axios.get(`${API_URL}/chats`, {
@@ -26,6 +51,7 @@ export default function HomePage(){
                     Authorization: `Bearer ${token}`
                 }
             });
+
             if (response.status >= 200 && response.status < 300) {
                 const data = response.data;
                 setConversations(data.conversations);
@@ -34,7 +60,11 @@ export default function HomePage(){
                 throw new Error('Error fetching conversations')
             }
         } catch (error) {
-             console.error('Error retrieving chats:', error);
+            if (error.status === 401) {
+                handleRefreshToken();
+            } else {
+                console.error('Error retrieving chats:', error);
+            }
         }
     }
 
