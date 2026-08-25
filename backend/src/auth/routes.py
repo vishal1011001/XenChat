@@ -9,6 +9,7 @@ from .utils import verify_password_hash, create_access_token
 from datetime import timedelta
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from .dependencies import RefreshTokenBearer
 
 auth_router = APIRouter()
 auth_service = AuthService()
@@ -17,7 +18,10 @@ ACCESS_TOKEN_EXPIRY=timedelta(hours=24)
 REFRESH_TOKEN_EXPIRY=timedelta(days=7)
 
 @auth_router.post('/signup', status_code=status.HTTP_201_CREATED)
-async def user_signup(user_credentials: UserCreateModel, session: AsyncSession = Depends(get_session)):
+async def user_signup(
+    user_credentials: UserCreateModel, 
+    session: AsyncSession = Depends(get_session)
+):
     email = user_credentials.email
     username = user_credentials.username
     email_exists = await auth_service.check_email_exists(email, session)
@@ -39,7 +43,10 @@ async def user_signup(user_credentials: UserCreateModel, session: AsyncSession =
 
 
 @auth_router.post('/signin')
-async def user_signin(user_credentials: UserLoginModel, session: AsyncSession = Depends(get_session)):
+async def user_signin(
+    user_credentials: UserLoginModel, 
+    session: AsyncSession = Depends(get_session)
+):
     identity = user_credentials.identity
     email = None
     username = None
@@ -98,6 +105,7 @@ async def user_signin(user_credentials: UserLoginModel, session: AsyncSession = 
         'user': user_data
     }
     
+    
 @auth_router.get('/search/user/{username}')
 async def search_user(
     username: str,                  
@@ -114,3 +122,25 @@ async def search_user(
             detail='username not found'
         )
     
+@auth_router.get('/refresh_token')
+async def get_new_access_token(
+    refresh_token_data: dict = Depends(RefreshTokenBearer())
+):
+    user_data = refresh_token_data['user']
+    
+    new_access_token = await create_access_token(
+        user_data=user_data,
+        expiry=ACCESS_TOKEN_EXPIRY,
+        refresh=False
+    )
+    new_refresh_token = await create_access_token(
+        user_data=user_data,
+        expiry=REFRESH_TOKEN_EXPIRY,
+        refresh=True
+    )
+    
+    return {
+        'status_code': 'refresh success',
+        'access_token': new_access_token,
+        'refresh_token': new_refresh_token,
+    }
