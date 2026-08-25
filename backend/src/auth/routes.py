@@ -15,8 +15,8 @@ from .dependencies import AccessTokenBearer, RefreshTokenBearer
 auth_router = APIRouter()
 auth_service = AuthService()
 
-ACCESS_TOKEN_EXPIRY=timedelta(hours=24)
-REFRESH_TOKEN_EXPIRY=timedelta(days=7)
+ACCESS_TOKEN_EXPIRY=timedelta(minutes=10)
+REFRESH_TOKEN_EXPIRY=timedelta(days=10)
 
 @auth_router.post('/signup', status_code=status.HTTP_201_CREATED)
 async def user_signup(
