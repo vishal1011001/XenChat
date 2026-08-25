@@ -4,9 +4,12 @@ import { Sidebar } from "../components/Sidebar";
 import axios from 'axios';
 import { useEffect, useState } from "react";
 import { useWebSocket } from "../hooks/useWebSocket";
+import { useNavigate } from "react-router-dom";
 
 
 export default function HomePage(){
+    const nav = useNavigate();
+
     const API_URL = 'http://localhost:8000/api/v1';
     const [conversations, setConversations] = useState([]);
     const [messages, setMessages] = useState([]);
@@ -38,6 +41,9 @@ export default function HomePage(){
                 }
             }
         } catch (error) {
+            if (error.status === 401) {
+                nav('/login');
+            }
             console.error("Error Refreshing tokens:", error);
         }
     }
