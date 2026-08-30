@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { StartNewConversation } from './SidebarComponents/StartNewConversation';
 import axios from 'axios';
 
-export function Sidebar({ setConversations, API_URL }) {
+export function Sidebar({ setConversations, API_URL, handleRefreshToken, setActiveConvUid }) {
     const navigate = useNavigate();
 
     const handleLogout = async (e) => {
@@ -46,7 +46,7 @@ export function Sidebar({ setConversations, API_URL }) {
                     <img src="/add.png" className="invert-100" />
                 </button>
                 {wantToStartConv && (
-                    <StartNewConversation setConversations={setConversations} API_URL={API_URL} />
+                    <StartNewConversation setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} />
                 )}
                 <button onClick={handleLogout}>
                     <img src='/logout.png' className='h-7 invert-100' />

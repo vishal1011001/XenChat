@@ -1,19 +1,20 @@
 import { useState } from "react";
 import axios from 'axios';
 
-export function StartNewConversation({ setConversations, API_URL, handleRefreshToken }) {
+export function StartNewConversation({ setConversations, API_URL, handleRefreshToken, setActiveConvUid }) {
     const AUTH_API_URL = 'http://localhost:8000/api/v1/auth';
     const [username, setUsername] = useState('');
     const [response, setResponse] = useState('');
     const [userFound, setUserFound] = useState(false);
     const [responseReturned, setResponseReturned] = useState(false);
     const [convTypeSelected, setConvTypeSelected] = useState("dm");
-    
+
     const [wantToCreateGc, setWantToCreateGc] = useState(false);
-    const [gcAddedMembers, setGcAddedMembers] = useState([
-        {username: "vishal"},
-        {username: "abc"},
-        {username: "def"}
+    const [addedMembers, setaddedMembers] = useState([
+        {
+            username: JSON.parse(localStorage.getItem('xen_user_data'))?.username,
+            role: 'admin'
+        }
     ]);
 
     const handleSearchUser = async (e) => {
@@ -35,27 +36,36 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
         }
     }
 
+    const addMemberToGc = () => {
+        setaddedMembers([...addedMembers, {
+            username: username,
+            role: 'member'
+        }]);
+        setUsername('');
+        setResponseReturned(false);
+        setUserFound(false);
+    }
+
     const handleNewConversation = async (e) => {
-        e.preventDefault();
+        e?.preventDefault();
 
         try {
-            const currUser = JSON.parse(localStorage.getItem('xen_user_data'));
+            const users = wantToCreateGc ? addedMembers : [
+                ...addedMembers,
+                {
+                    username: username,
+                    role: 'member'
+                }
+            ];
+            
+            if (!wantToCreateGc) users[0].role = 'member';
 
             const create_conv_data = {
                 conversation_metadata: {
-                    conv_type: convTypeSelected,
-                    member_count: 2
+                    conv_type: wantToCreateGc ? 'group' : 'dm',
+                    member_count: users.length
                 },
-                users: [
-                    {
-                        username: JSON.parse(localStorage.getItem('xen_user_data')).username,
-                        role: "member"
-                    },
-                    {
-                        username: username,
-                        role: "member"
-                    }
-                ]
+                users: users
             };
 
             const token = localStorage.getItem('xen_access_token');
@@ -64,13 +74,15 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
                     "Authorization": `Bearer ${token}`
                 }
             });
-            const data = response.data.new_conversation;
-            data.last_message = '';
-            setConversations(prev => [data, ...prev]);
-
+            if (response.status >= 200 && response.status < 300) {
+                const data = response.data;
+                data.last_message = '';
+                setConversations(prev => [data, ...prev]);
+                setActiveConvUid(data.conv_uid);
+            }
         } catch (error) {
             if (error.status === 401) {
-                handleRefreshToken(handleNewConversation);
+                handleRefreshToken(() => handleNewConversation(e));
             }
             console.error('Error starting new conversation:', error);
         }
@@ -78,45 +90,57 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
 
     return (
         <div className="absolute left-[4vw] top-[6vw] w-[27vw] flex flex-col p-3! rounded-2xl! bg-slate-800! border">
-            <h4 className="text-lg font-semibold border-b">Start New Conversation</h4>
+            <h4 className="text-lg font-semibold border-b">{wantToCreateGc ? 'Start A Group Chat' : 'Start New Conversation'}</h4>
 
             <p className="mt-2.5 mb-1">{wantToCreateGc ? 'Search members to add:' : 'Search by entering username:'}</p>
             <div className="flex items-center-safe w-full gap-1">
                 <input
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="bg-slate-600 w-[80%] rounded p-1 pl-2.5 border border-cyan-600 outline-0"
+                    className="bg-slate-600 w-[70%] rounded p-1.5 pl-3 border border-cyan-600 outline-0"
                     placeholder="eg: vishal"
                 />
-                {userFound && (<p className="text-green-400 text-3xl absolute left-59 top-19">✓</p>)}
+                {userFound && (<p className="text-green-400 text-3xl absolute left-64 top-19">✓</p>)}
                 <button
                     onClick={handleSearchUser}
-                    className="bg-white text-slate-950 p-1 pl-6 pr-6 rounded hover:bg-gray-400"
+                    className="bg-white text-slate-950 p-1.5 flex-1 rounded hover:bg-gray-400"
                 >Go</button>
             </div>
 
             {responseReturned && !userFound && (<p className="p-1 text-red-500">Username Not Found</p>)}
-            <div className="pt-2 flex flex-col justify-center gap-1 w-full">
+            <div className="pt-2 flex flex-col justify-center gap-2 w-full">
                 {responseReturned && (
                     (userFound) && (
                         <button
-                            onClick={handleNewConversation}
-                            className="bg-white text-slate-950 p-1 w-[80%] hover:bg-gray-400 rounded-tl-full rounded-tr-2xl rounded-br-full rounded-bl-2xl"
-                        >Add</button>
+                            onClick={wantToCreateGc ? addMemberToGc : handleNewConversation}
+                            className="bg-white text-slate-950 p-1 border border-white hover:text-white hover:bg-slate-800 hover:border-green-700 rounded-tl-full rounded-tr-2xl rounded-br-full rounded-bl-2xl"
+                        >{wantToCreateGc ? 'Add' : `Chat with @${username}`}</button>
                     )
                 )}
-                <p className="Group">Or Create A Group Chat:</p>
-                <button 
-                    className="w-full bg-slate-700 p-1 rounded text-left pl-3"
-                    onClick={() => (setWantToCreateGc(!wantToCreateGc))}
-                >{wantToCreateGc ? 'Start DM' : 'Create Group'}</button>
 
+                {!wantToCreateGc && (<p className="Group">Or Create A Group Chat:</p>)}
+                <div className="flex flex-row justify-center items-center gap-2">
+                    {wantToCreateGc && (
+                        <button 
+                            onClick={handleNewConversation}
+                            className="bg-white text-black rounded text-lg flex-1 py-2 border border-white
+                            hover:bg-slate-800 hover:text-white hover:border hover:border-blue-900 transition
+                        ">Create</button>
+                    )}
+
+                    <button
+                        className="bg-slate-700 border border-blue-800 rounded text-lg flex-1 py-2
+                                    hover:bg-slate-900 hover:text-white hover:border hover:border-blue-900 transition"
+                        onClick={() => (setWantToCreateGc(!wantToCreateGc))}
+                    >{wantToCreateGc ? 'Cancel' : 'Create Group'}</button>
+                </div>
                 {(wantToCreateGc) && (
                     <div className="flex flex-col gap-2 bg-gray-900 p-2 rounded">
                         <p>Group Members:</p>
-                        {gcAddedMembers.map((member) => (
-                            <div className="flex flex-row items-center gap-2">
-                                <img src='/default-pfp.png' className="h-12"/>
+                        {addedMembers.map((member) => (
+                            <div key={member.username} 
+                                className="flex flex-row items-center gap-2">
+                                <img src='/default-pfp.png' className="h-12" />
                                 <h4 className="text-xl font-semibold">{member.username}</h4>
                             </div>
                         ))}
