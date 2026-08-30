@@ -22,8 +22,7 @@ export default function HomePage(){
     const sendMessage = useWebSocket(currUserUid, setMessages);
 
 
-    const handleRefreshToken = async (e) => {
-        e?.preventDefault();
+    const handleRefreshToken = async (funcToRun) => {
         try {
             const ref_token = localStorage.getItem('xen_refresh_token');
             const response = await axios.get(`${API_URL}/auth/refresh_token`, {
@@ -37,7 +36,7 @@ export default function HomePage(){
                 if (data.status_code === 'refresh success') {
                     localStorage.setItem('xen_access_token', data.access_token);
                     localStorage.setItem('xen_refresh_token', data.refresh_token);
-                    retrieveChats();
+                    funcToRun();
                 }
             }
         } catch (error) {
@@ -67,7 +66,7 @@ export default function HomePage(){
             }
         } catch (error) {
             if (error.status === 401) {
-                handleRefreshToken();
+                handleRefreshToken(retrieveChats);
             } else {
                 console.error('Error retrieving chats:', error);
             }
@@ -102,13 +101,13 @@ export default function HomePage(){
 
         const changed = JSON.stringify(conversations) !== JSON.stringify(newConvs);
         if (changed) {
-            setConversations(newConvs)
+            setConversations(newConvs);
         }
     }, [conversations, messages]);
 
     return (
         <div className="h-screen w-screen flex flex-row">
-            <Sidebar setConversations={setConversations} API_URL={API_URL}/>
+            <Sidebar setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} />
             <Chats conversations={conversations} setActiveConvUid={setActiveConvUid}/>
             <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messagesToDisplay={messagesToDisplay} activeConvUid={activeConvUid}/>
         </div>
