@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from 'axios';
 
 export function StartNewConversation({ setConversations, API_URL, handleRefreshToken, setActiveConvUid }) {
@@ -10,15 +10,16 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
     const [convTypeSelected, setConvTypeSelected] = useState("dm");
 
     const [wantToCreateGc, setWantToCreateGc] = useState(false);
-    const [addedMembers, setaddedMembers] = useState([
+    const currUsername = JSON.parse(localStorage.getItem('xen_user_data'))?.username
+    const [addedMembers, setAddedMembers] = useState([
         {
-            username: JSON.parse(localStorage.getItem('xen_user_data'))?.username,
+            username: currUsername,
             role: 'admin'
         }
     ]);
 
     const handleSearchUser = async (e) => {
-        e.preventDefault();
+        e?.preventDefault();
 
         try {
             const response = await axios.get(`${AUTH_API_URL}/search/user/${username}`);
@@ -36,8 +37,19 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
         }
     }
 
+    // useEffect(() => {
+    //     handleSearchUser();
+    // }, [username]);
+
+    const removeMemberFromGc = (username) => {
+        if (username === currUsername) {
+            return;
+        }
+        setAddedMembers(addedMembers.filter(member => member.username !== username));
+    }
+
     const addMemberToGc = () => {
-        setaddedMembers([...addedMembers, {
+        setAddedMembers([...addedMembers, {
             username: username,
             role: 'member'
         }]);
@@ -57,7 +69,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
                     role: 'member'
                 }
             ];
-            
+
             if (!wantToCreateGc) users[0].role = 'member';
 
             const create_conv_data = {
@@ -100,7 +112,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
                     className="bg-slate-600 w-[70%] rounded p-1.5 pl-3 border border-cyan-600 outline-0"
                     placeholder="eg: vishal"
                 />
-                {userFound && (<p className="text-green-400 text-3xl absolute left-64 top-19">✓</p>)}
+                {userFound && (<p className="text-green-400 text-3xl absolute left-63 top-20">✓</p>)}
                 <button
                     onClick={handleSearchUser}
                     className="bg-white text-slate-950 p-1.5 flex-1 rounded hover:bg-gray-400"
@@ -121,7 +133,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
                 {!wantToCreateGc && (<p className="Group">Or Create A Group Chat:</p>)}
                 <div className="flex flex-row justify-center items-center gap-2">
                     {wantToCreateGc && (
-                        <button 
+                        <button
                             onClick={handleNewConversation}
                             className="bg-white text-black rounded text-lg flex-1 py-2 border border-white
                             hover:bg-slate-800 hover:text-white hover:border hover:border-blue-900 transition
@@ -138,10 +150,17 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
                     <div className="flex flex-col gap-2 bg-gray-900 p-2 rounded">
                         <p>Group Members:</p>
                         {addedMembers.map((member) => (
-                            <div key={member.username} 
-                                className="flex flex-row items-center gap-2">
+                            <div key={member.username}
+                                className="flex flex-row items-center gap-2 w-full pr-2"
+                            >
                                 <img src='/default-pfp.png' className="h-12" />
                                 <h4 className="text-xl font-semibold">{member.username}</h4>
+                                {(member.username !== currUsername) && (
+                                    <button
+                                        onClick={() => removeMemberFromGc(member.username)}
+                                        className="ml-auto px-1.5 rounded border border-cyan-600 text-blue-500 hover:text-blue-300"
+                                    >Remove</button>
+                                )}
                             </div>
                         ))}
                     </div>
