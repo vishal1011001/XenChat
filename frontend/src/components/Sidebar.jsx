@@ -32,7 +32,7 @@ export function Sidebar({ setConversations, API_URL, handleRefreshToken, setActi
     }
 
     return (
-        <div className="h-screen w-[5vw] bg-slate-800 flex flex-col pt-3">
+        <div className="h-screen w-[5vw] bg-slate-900 flex flex-col pt-3">
             <div className="flex flex-col gap-4 items-center p-2 *:text-white *:rounded-full *:p-1 *:hover:bg-gray-600 ">
                 <button className="h-10 w-10">
                     <img src="/chat.png" className="invert-100 w-6 place-self-center-safe" />
