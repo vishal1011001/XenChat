@@ -7,7 +7,7 @@ import { useWebSocket } from "../hooks/useWebSocket";
 import { useNavigate } from "react-router-dom";
 
 
-export default function HomePage(){
+export default function HomePage() {
     const nav = useNavigate();
 
     const API_URL = 'http://localhost:8000/api/v1';
@@ -17,6 +17,7 @@ export default function HomePage(){
     const [activeConvUid, setActiveConvUid] = useState('');
     const [messagesToDisplay, setMessagesToDisplay] = useState([]);
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [openChatMetadata, setOpenChatMetadata] = useState({});
 
     const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
     const sendMessage = useWebSocket(currUserUid, setMessages);
@@ -76,6 +77,9 @@ export default function HomePage(){
     useEffect(() => {
         const messagesFiltered = messages.filter(message => message.conv_uid === activeConvUid);
         setMessagesToDisplay(messagesFiltered);
+
+        const conv_metadata = conversations.filter(conv => conv.conv_uid === activeConvUid)[0];
+        setOpenChatMetadata(conv_metadata);
         setIsChatOpen(true);
     }, [activeConvUid, messages]);
 
@@ -92,11 +96,11 @@ export default function HomePage(){
 
             const latest = convMessages.reduce((a, b) => {
                 const ta = a.sent_at ? new Date(a.sent_at) : new Date(0);
-                const tb = b.sent_at ? new Date(b.sent_at) : new Date(0); 
+                const tb = b.sent_at ? new Date(b.sent_at) : new Date(0);
                 return (ta > tb) ? a : b;
             })
 
-            return {...conv, last_message: latest.content};
+            return { ...conv, last_message: latest.content };
         })
 
         const changed = JSON.stringify(conversations) !== JSON.stringify(newConvs);
@@ -108,8 +112,8 @@ export default function HomePage(){
     return (
         <div className="h-screen w-screen flex flex-row">
             <Sidebar setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} />
-            <Chats conversations={conversations} setActiveConvUid={setActiveConvUid}/>
-            <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messagesToDisplay={messagesToDisplay} activeConvUid={activeConvUid}/>
+            <Chats conversations={conversations} setActiveConvUid={setActiveConvUid} />
+            <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messagesToDisplay={messagesToDisplay} activeConvUid={activeConvUid} openChatMetadata={openChatMetadata} />
         </div>
     );
 }
