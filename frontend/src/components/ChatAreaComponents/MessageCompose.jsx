@@ -7,10 +7,11 @@ export function MessageCompose({ sendMessage, currUserUid, activeConvUid }) {
         if (!text.trim()) return;
         setText('');
         sendMessage({
+            req: 'send_msg',
             content: text.trim(),
             conv_uid: activeConvUid,
             sender_uid: currUserUid
-        })
+        });
     }
     return (
         <div className="flex felx-col w-[66vw] gap-x-2 justify-center fixed bottom-2 self-center-safe z-2">
@@ -21,7 +22,8 @@ export function MessageCompose({ sendMessage, currUserUid, activeConvUid }) {
             />
             <button 
                 onClick={handleSendMessage}
-            className="text-slate-800 bg-white p-3 rounded-full">Send</button>
+                className="text-slate-800 bg-white p-3 rounded-full"
+            >Send</button>
         </div>
     );
 }

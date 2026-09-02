@@ -15,7 +15,7 @@ export function ChatArea({ sendMessage, currUserUid, messagesToDisplay, activeCo
                 </p>
             </div>
 
-            <Messages messagesToDisplay={messagesToDisplay} currUserUid={currUserUid}/>
+            <Messages sendMessage={sendMessage} activeConvUid={activeConvUid} messagesToDisplay={messagesToDisplay} currUserUid={currUserUid}/>
             
             <MessageCompose sendMessage={sendMessage} currUserUid={currUserUid} activeConvUid={activeConvUid}/>
         </div>
