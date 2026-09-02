@@ -16,7 +16,13 @@ export function useWebSocket(userUid, setMessages) {
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
 
-            setMessages(prevM => [...prevM, message]);
+            if (message.req === 'send_msg') {
+                delete message.req;
+                setMessages(prevM => [...prevM, message]);
+            } else if (message.req === 'delete_msg') {
+                const message_uid = message.message_uid;
+                setMessages(prevM => prevM.filter(msg => msg.message_uid !== message_uid));
+            }
         }
 
         socket.onerror = (error) => {
