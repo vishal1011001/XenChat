@@ -15,6 +15,21 @@ class ChatService():
         await session.commit()
         await session.refresh(msg)
         return msg
+    
+    async def delete_message(self, message_uid: uuid.UUID, session: AsyncSession):
+        '''
+            Delete a message from database (messsages table)
+        '''
+        statement = select(Message).where(Message.message_uid == message_uid)
+        result = await session.exec(statement)
+        msg = result.first()
+        
+        if not msg: 
+            return 'message not found'
+        
+        await session.delete(msg)
+        await session.commit()
+        return 'message deleted'
         
     async def conv_members(self, conv_uid: uuid.UUID, session: AsyncSession) -> List:
         '''
