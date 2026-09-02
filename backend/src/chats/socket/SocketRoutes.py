@@ -17,28 +17,38 @@ async def websocket_endpoint(websocket: WebSocket, client_id):
         while True:
             data = await websocket.receive_json()
             
-            #saving message in database
+            # Database operation
             async with session_factory() as session:
-                new_msg_obj = await chat_service.register_message(
-                    message=data,
-                    session=session
-                )
+                if data['req'] == 'delete_msg':
+                    await chat_service.delete_message(
+                        message_uid=data['message_uid'], 
+                        session=session
+                    )
+                elif data['req'] == 'send_msg':
+                    new_msg_obj = await chat_service.register_message(
+                        message=data,
+                        session=session
+                    )
+            
+            payload = {}
+            if data['req'] == 'delete_msg':
+                payload = data
+            elif data['req'] == 'send_msg':
+                payload = {
+                    "req": "send_msg",
+                    "message_uid": str(new_msg_obj.message_uid),
+                    "content": new_msg_obj.content,
+                    "conv_uid": str(new_msg_obj.conv_uid),
+                    "sender_uid": str(new_msg_obj.sender_uid),
+                    "sent_at": new_msg_obj.sent_at.isoformat() if new_msg_obj.sent_at else None
+                }
             
             #broadcasting message to all conversation members - that are online
             conv_uid = data['conv_uid']
-            message = data['content']
-            
-            new_msg_payload = {
-                "message_uid": str(new_msg_obj.message_uid),
-                "content": new_msg_obj.content,
-                "conv_uid": str(new_msg_obj.conv_uid),
-                "sender_uid": str(new_msg_obj.sender_uid),
-                "sent_at": new_msg_obj.sent_at.isoformat() if new_msg_obj.sent_at else None
-            }
             
             member_uids = await chat_service.conv_members(conv_uid, session)
 
-            await manager.broadcast(member_uids, new_msg_payload)
+            await manager.broadcast(member_uids, payload)
             
     except WebSocketDisconnect:
         await manager.disconnect(websocket)
