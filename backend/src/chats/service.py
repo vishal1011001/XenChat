@@ -3,6 +3,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
 from sqlmodel import select, desc, asc
 from src.db.models import User, Conversation, ConversationMember, Message 
+from datetime import datetime
 import uuid
 
 class ChatService():
@@ -30,6 +31,22 @@ class ChatService():
         await session.delete(msg)
         await session.commit()
         return 'message deleted'
+    
+    async def edit_message(self, update_message_data: dict, session: AsyncSession):
+        '''
+            Edits an existing message 
+        '''
+        message_uid = update_message_data['message_uid']
+        
+        statement1 = select(Message).where(Message.message_uid == message_uid)
+        result = await session.exec(statement1)
+        msg_to_update = result.first()
+        
+        msg_to_update.content = update_message_data['new_content']
+        msg_to_update.edited_at = datetime.now()
+        
+        await session.commit()
+        return msg_to_update
         
     async def conv_members(self, conv_uid: uuid.UUID, session: AsyncSession) -> List:
         '''
