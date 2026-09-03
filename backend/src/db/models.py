@@ -80,3 +80,4 @@ class Message(SQLModel, table=True):
     )
     
     sent_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    edited_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
