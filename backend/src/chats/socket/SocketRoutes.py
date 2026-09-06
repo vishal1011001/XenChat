@@ -19,21 +19,24 @@ async def websocket_endpoint(websocket: WebSocket, client_id):
             
             # Database operation
             async with session_factory() as session:
-                if data['req'] == 'delete_msg':
-                    await chat_service.delete_message(
-                        message_uid=data['message_uid'], 
-                        session=session
-                    )
-                elif data['req'] == 'send_msg':
+                if data['req'] == 'send_msg':
                     new_msg_obj = await chat_service.register_message(
                         message=data,
                         session=session
                     )
+                elif data['req'] == 'edit_msg':
+                    await chat_service.edit_message(
+                        update_message_data=data,
+                        session=session
+                    )
+                elif data['req'] == 'delete_msg':
+                    await chat_service.delete_message(
+                        message_uid=data['message_uid'], 
+                        session=session
+                    )
             
             payload = {}
-            if data['req'] == 'delete_msg':
-                payload = data
-            elif data['req'] == 'send_msg':
+            if data['req'] == 'send_msg':
                 payload = {
                     "req": "send_msg",
                     "message_uid": str(new_msg_obj.message_uid),
@@ -42,6 +45,10 @@ async def websocket_endpoint(websocket: WebSocket, client_id):
                     "sender_uid": str(new_msg_obj.sender_uid),
                     "sent_at": new_msg_obj.sent_at.isoformat() if new_msg_obj.sent_at else None
                 }
+            elif data['req'] == 'delete_msg':
+                payload = data
+            elif data['req'] == 'edit_msg':
+                payload = data
             
             #broadcasting message to all conversation members - that are online
             conv_uid = data['conv_uid']
