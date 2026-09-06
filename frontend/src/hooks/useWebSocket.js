@@ -19,6 +19,11 @@ export function useWebSocket(userUid, setMessages) {
             if (message.req === 'send_msg') {
                 delete message.req;
                 setMessages(prevM => [...prevM, message]);
+            } else if (message.req == 'edit_msg') {
+                setMessages(prevM => prevM.map(msg => (
+                    msg.message_uid === message.message_uid ? {...msg, content: message.new_content, edited_at: message.edited_at} : msg
+                )
+                ))
             } else if (message.req === 'delete_msg') {
                 const message_uid = message.message_uid;
                 setMessages(prevM => prevM.filter(msg => msg.message_uid !== message_uid));
