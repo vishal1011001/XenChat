@@ -36,7 +36,9 @@ class Conversation(SQLModel, table=True):
         )
     )
     conv_type: str
+    conv_name: str | None = Field(default=None, max_length=100, nullable=True)
     member_count: int = Field(default=0)
+    conv_name: str
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 
