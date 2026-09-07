@@ -10,6 +10,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
     const [convTypeSelected, setConvTypeSelected] = useState("dm");
 
     const [wantToCreateGc, setWantToCreateGc] = useState(false);
+    const [gcName, setGcName] = useState('');
     const currUsername = JSON.parse(localStorage.getItem('xen_user_data'))?.username
     const [addedMembers, setAddedMembers] = useState([
         {
@@ -36,10 +37,6 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
             console.error('Error Searching user', error);
         }
     }
-
-    // useEffect(() => {
-    //     handleSearchUser();
-    // }, [username]);
 
     const removeMemberFromGc = (username) => {
         if (username === currUsername) {
@@ -75,6 +72,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
             const create_conv_data = {
                 conversation_metadata: {
                     conv_type: wantToCreateGc ? 'group' : 'dm',
+                    conv_name: wantToCreateGc ? gcName : null,
                     member_count: users.length
                 },
                 users: users
@@ -148,6 +146,12 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
                 </div>
                 {(wantToCreateGc) && (
                     <div className="flex flex-col gap-2 bg-gray-900 p-2 rounded">
+                        <input 
+                            value={gcName}
+                            onChange={(e) => setGcName(e.target.value)}
+                            placeholder="Give Group a Name"
+                            className="p-2 border border-blue-400 rounded-xl outline-0"
+                        />
                         <p>Group Members:</p>
                         {addedMembers.map((member) => (
                             <div key={member.username}
