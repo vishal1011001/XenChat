@@ -10,6 +10,7 @@ class MessageModel(BaseModel):
     
 class ConversationMetadata(BaseModel):
     conv_type: str
+    conv_name: str | None = None
     member_count: int
     
 class ConvCreateModel(BaseModel):
