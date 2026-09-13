@@ -21,7 +21,7 @@ export default function HomePage() {
     const [openChatMetadata, setOpenChatMetadata] = useState({});
 
     const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
-    const sendMessage = useWebSocket(currUserUid, setMessages);
+    const sendMessage = useWebSocket(currUserUid, setConversations, setMessages);
 
 
     const handleRefreshToken = async (funcToRun) => {
@@ -115,7 +115,7 @@ export default function HomePage() {
 
     return (
         <div className="h-screen w-screen flex flex-row">
-            <Sidebar setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} />
+            <Sidebar setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} sendMessage={sendMessage} />
             <Chats conversations={conversations} setActiveConvUid={setActiveConvUid} setIsChatOpen={setIsChatOpen} />
             {isChatOpen ? (
                 <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messagesToDisplay={messagesToDisplay} activeConvUid={activeConvUid} openChatMetadata={openChatMetadata} />
