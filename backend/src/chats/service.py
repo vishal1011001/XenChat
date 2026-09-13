@@ -150,6 +150,7 @@ class ChatService():
         session.add(conversation)
         await session.commit()
 
+        # Database operation
         # creating entries in conversation_member table
         conv_uid = conversation.conv_uid
         for user in users:
@@ -164,19 +165,20 @@ class ChatService():
             
         await session.commit()
         
+        # Response 
         # returning response after conversation creation
         member_usernames = []
         for user in users:
-            if user['username'] != creator_username:
-                member_usernames.append(user['username'])
+            member_usernames.append(user['username'])
         
         conversation_response = {
-            "conv_uid": conv_uid,
+            "req": "create_conv",
+            "conv_uid": str(conv_uid),
             "conv_metadata": {
                 "conv_type": conversation.conv_type,
                 "member_count": conversation.member_count,
-                "created_at": conversation.created_at,
-                "updated_at": conversation.updated_at
+                "created_at": str(conversation.created_at),
+                "updated_at": str(conversation.updated_at)
             },
             "member_usernames": member_usernames
         }
