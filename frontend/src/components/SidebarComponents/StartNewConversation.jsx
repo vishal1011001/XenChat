@@ -86,8 +86,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
             });
             if (response.status >= 200 && response.status < 300) {
                 const data = response.data;
-                data.last_message = '';
-                setConversations(prev => [data, ...prev]);
+                // Actual new conv metadata response will come via socket connection.
                 setActiveConvUid(data.conv_uid);
             }
         } catch (error) {
@@ -118,6 +117,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
             </div>
 
             {responseReturned && !userFound && (<p className="p-1 text-red-500">Username Not Found</p>)}
+            
             <div className="pt-2 flex flex-col justify-center gap-2 w-full">
                 {responseReturned && (
                     (userFound) && (
@@ -146,7 +146,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
                 </div>
                 {(wantToCreateGc) && (
                     <div className="flex flex-col gap-2 bg-gray-900 p-2 rounded">
-                        <input 
+                        <input
                             value={gcName}
                             onChange={(e) => setGcName(e.target.value)}
                             placeholder="Give Group a Name"
