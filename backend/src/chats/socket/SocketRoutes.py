@@ -1,4 +1,4 @@
-from .ConnectionManager import ConnectionManager
+from .ConnectionManager import manager
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from src.chats.service import ChatService
 from src.db.main import session_factory
@@ -6,8 +6,6 @@ import uuid
 
 router = router_ws = APIRouter()
 chat_service = ChatService()
-
-manager = ConnectionManager()
 
 @router.websocket('/ws/{client_id}')
 async def websocket_endpoint(websocket: WebSocket, client_id):
@@ -52,9 +50,8 @@ async def websocket_endpoint(websocket: WebSocket, client_id):
             
             #broadcasting message to all conversation members - that are online
             conv_uid = data['conv_uid']
-            
             member_uids = await chat_service.conv_members(conv_uid, session)
-
+            
             await manager.broadcast(member_uids, payload)
             
     except WebSocketDisconnect:
