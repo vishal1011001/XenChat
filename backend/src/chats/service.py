@@ -195,3 +195,14 @@ class ChatService():
         creator_user_uid = str(res.first())
         
         return True if (creator_user_uid != user_uid_of_creator) else False;
+    
+    async def update_last_read(self, conversation_uid: uuid.UUID, user_uid: uuid.UUID, read_time: datetime, session: AsyncSession):
+        '''
+            Updates last_read_at of a conv-user row in conversation_member table.
+        '''
+        statement0 = select(ConversationMember).where(ConversationMember.conv_uid == conversation_uid and ConversationMember.user_uid == user_uid)
+        res = await session.exec(statement0)
+        conv_mem_to_update = res.first()
+        
+        conv_mem_to_update.last_read_at = read_time
+        await session.commit()
