@@ -56,6 +56,7 @@ class ConversationMember(SQLModel, table=True):
         primary_key=True
     )
     role: str = "member"
+    last_read_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     joined_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
     
