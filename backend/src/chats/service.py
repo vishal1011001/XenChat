@@ -79,27 +79,42 @@ class ChatService():
             Get all messages that belong to a user.
             Fetched during app startup on frontend (initialize)
         '''
+        # Get all conv_uids that user is a part of
         conv_uids = await self.get_all_conv_uids_of_user(user_uid, session)
 
-        curr_user_name = await session.exec(select(User.username).where(User.user_uid == user_uid))
-        curr_user_name = curr_user_name.first()
+        # Get current username using user_uid
+        statement0 = select(User.username).where(User.user_uid == user_uid)
+        result = await session.exec(statement0)
+        curr_user_name = result.first()
+        
+        # All conversations with metadata and member usernames
         all_conversations = []
         for conv_uid in conv_uids:
+            # for member usernames of each conv
             statement_usernames = select(User.username).where(User.user_uid.in_(select(ConversationMember.user_uid).where(ConversationMember.conv_uid == conv_uid)));
             usernames_result = await session.exec(statement_usernames)
             usernames_result = usernames_result.all()
             usernames_result.remove(curr_user_name)
             
+            # metadata of each conv
             statement_conv_metadata = select(Conversation).where(Conversation.conv_uid == conv_uid)
             conv_metadata_result = await session.exec(statement_conv_metadata)
+            conv_metadata = dict(conv_metadata_result.first())
+            
+            # adding last_read_at field to metadata
+            statement_last_read_at = select(ConversationMember.last_read_at).where(ConversationMember.conv_uid == conv_uid and ConversationMember.user_uid == user_uid)
+            result = await session.exec(statement_last_read_at)
+            result_last_read_at = result.first()
+            
+            conv_metadata['last_read_at'] = result_last_read_at
             
             all_conversations.append({
                 "conv_uid": conv_uid,
-                "conv_metadata": conv_metadata_result.first(),
+                "conv_metadata": conv_metadata,
                 "member_usernames": usernames_result
             })
 
-
+        # get all messages of a user (sent/received)
         messages = await self.get_messages_of_user(conv_uids, session)
         
         return {
