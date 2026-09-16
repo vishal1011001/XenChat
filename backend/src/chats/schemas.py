@@ -18,10 +18,10 @@ class ConvCreateModel(BaseModel):
     users: list[dict]
     
 
-
 '''Response Models:'''
 
 class ConversationMetadataResponseModel(ConversationMetadata):
+    last_read_at: datetime
     created_at: datetime
     updated_at: datetime
 
