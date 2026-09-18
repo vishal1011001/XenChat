@@ -1,7 +1,7 @@
 from .schemas import MessageModel, ConvCreateModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
-from sqlmodel import select, desc, asc
+from sqlmodel import select, desc, asc, and_
 from src.db.models import User, Conversation, ConversationMember, Message 
 from datetime import datetime
 import uuid
@@ -15,7 +15,7 @@ class ChatService():
         session.add(msg)
         await session.commit()
         await session.refresh(msg)
-        return msg
+        return msg if msg else None
     
     async def delete_message(self, message_uid: uuid.UUID, session: AsyncSession):
         '''
@@ -82,36 +82,40 @@ class ChatService():
         # Get all conv_uids that user is a part of
         conv_uids = await self.get_all_conv_uids_of_user(user_uid, session)
 
-        # Get current username using user_uid
-        statement0 = select(User.username).where(User.user_uid == user_uid)
-        result = await session.exec(statement0)
-        curr_user_name = result.first()
         
-        # All conversations with metadata and member usernames
+        # All conversations with metadata and members' data(usernames + last_read_at)
         all_conversations = []
         for conv_uid in conv_uids:
-            # for member usernames of each conv
-            statement_usernames = select(User.username).where(User.user_uid.in_(select(ConversationMember.user_uid).where(ConversationMember.conv_uid == conv_uid)));
-            usernames_result = await session.exec(statement_usernames)
-            usernames_result = usernames_result.all()
-            usernames_result.remove(curr_user_name)
+            # for member usernames of each conv + last_read_at of each member
+            statement_members = select(
+                User.username,
+                ConversationMember.last_read_at
+            ).join(
+                ConversationMember,
+                ConversationMember.user_uid == User.user_uid
+            ).where(
+                ConversationMember.conv_uid == conv_uid
+            )
+            
+            members_result = await session.exec(statement_members)
+            members_result = members_result.all()
+            
+            members = [
+                {
+                    "username": username,
+                    "last_read_at": last_read_at
+                } 
+                for username, last_read_at in members_result
+            ]
             
             # metadata of each conv
             statement_conv_metadata = select(Conversation).where(Conversation.conv_uid == conv_uid)
             conv_metadata_result = await session.exec(statement_conv_metadata)
-            conv_metadata = dict(conv_metadata_result.first())
-            
-            # adding last_read_at field to metadata
-            statement_last_read_at = select(ConversationMember.last_read_at).where(ConversationMember.conv_uid == conv_uid and ConversationMember.user_uid == user_uid)
-            result = await session.exec(statement_last_read_at)
-            result_last_read_at = result.first()
-            
-            conv_metadata['last_read_at'] = result_last_read_at
             
             all_conversations.append({
                 "conv_uid": conv_uid,
-                "conv_metadata": conv_metadata,
-                "member_usernames": usernames_result
+                "conv_metadata": conv_metadata_result.first(),
+                "members": members
             })
 
         # get all messages of a user (sent/received)
@@ -215,7 +219,7 @@ class ChatService():
         '''
             Updates last_read_at of a conv-user row in conversation_member table.
         '''
-        statement0 = select(ConversationMember).where(ConversationMember.conv_uid == conversation_uid and ConversationMember.user_uid == user_uid)
+        statement0 = select(ConversationMember).where(and_(ConversationMember.conv_uid == conversation_uid, ConversationMember.user_uid == user_uid))
         res = await session.exec(statement0)
         conv_mem_to_update = res.first()
         
