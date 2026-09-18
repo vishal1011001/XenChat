@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 import uuid
-from typing import List
+from typing import List, Dict
 from datetime import datetime
 
 class MessageModel(BaseModel):
@@ -21,7 +21,6 @@ class ConvCreateModel(BaseModel):
 '''Response Models:'''
 
 class ConversationMetadataResponseModel(ConversationMetadata):
-    last_read_at: datetime
     created_at: datetime
     updated_at: datetime
 
@@ -32,10 +31,16 @@ class MessageResponseModel(BaseModel):
     sender_uid: uuid.UUID
     sent_at: datetime
     
+    
+class Member(BaseModel):
+    username: str
+    last_read_at: datetime
+    
 class ConversationResponseModel(BaseModel):
     conv_uid: uuid.UUID
     conv_metadata: ConversationMetadataResponseModel
-    member_usernames: List[str]
+    members: List[Member]
+    
     
 class RetrieveAllChatsResponseModel(BaseModel):
     conversations: List[ConversationResponseModel]
