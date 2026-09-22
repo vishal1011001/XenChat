@@ -33,6 +33,7 @@ class MessageResponseModel(BaseModel):
     
     
 class Member(BaseModel):
+    user_uid: uuid.UUID
     username: str
     last_read_at: datetime
     
