@@ -88,6 +88,7 @@ class ChatService():
         for conv_uid in conv_uids:
             # for member usernames of each conv + last_read_at of each member
             statement_members = select(
+                User.user_uid,
                 User.username,
                 ConversationMember.last_read_at
             ).join(
@@ -102,10 +103,11 @@ class ChatService():
             
             members = [
                 {
+                    "user_uid": user_uid,
                     "username": username,
                     "last_read_at": last_read_at
                 } 
-                for username, last_read_at in members_result
+                for user_uid, username, last_read_at in members_result
             ]
             
             # metadata of each conv
