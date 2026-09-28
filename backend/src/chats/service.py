@@ -174,12 +174,14 @@ class ChatService():
         # Database operation
         # creating entries in conversation_member table
         conv_uid = conversation.conv_uid
+        read_time = datetime.now()
         for user in users:
             username = user['username']
             statement1 = select(User.user_uid).where(User.username == username)
             res = await session.exec(statement1)
             user["user_uid"] = res.first()
             user["conv_uid"] = conv_uid
+            user["last_read_at"] = read_time
             
             member = ConversationMember(**user)
             session.add(member)
@@ -188,9 +190,14 @@ class ChatService():
         
         # Response 
         # returning response after conversation creation
-        member_usernames = []
+        members = []
         for user in users:
-            member_usernames.append(user['username'])
+            user_to_add = {
+                "user_uid": str(user['user_uid']),
+                "username": user['username'],
+                "last_read_at": str(read_time),
+            }
+            members.append(user_to_add)
         
         conversation_response = {
             "req": "create_conv",
@@ -201,7 +208,7 @@ class ChatService():
                 "created_at": str(conversation.created_at),
                 "updated_at": str(conversation.updated_at)
             },
-            "member_usernames": member_usernames
+            "members": members
         }
         
         return conversation_response
