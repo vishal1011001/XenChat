@@ -114,10 +114,15 @@ class ChatService():
             statement_conv_metadata = select(Conversation).where(Conversation.conv_uid == conv_uid)
             conv_metadata_result = await session.exec(statement_conv_metadata)
             
+            #last_message of a conversation
+            statement_last_message = select(Message).where(Message.conv_uid == conv_uid).order_by(desc(Message.sent_at))
+            last_message = await session.exec(statement_last_message)
+            
             all_conversations.append({
                 "conv_uid": conv_uid,
                 "conv_metadata": conv_metadata_result.first(),
-                "members": members
+                "members": members,
+                "last_message": last_message.first()
             })
 
         # get all messages of a user (sent/received)
