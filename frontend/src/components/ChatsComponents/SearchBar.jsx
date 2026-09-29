@@ -6,8 +6,8 @@ export function SearchBar({ conversations, setConvToDisplay }) {
         setSearchText(e.target.value)
     }
     
-    const filteredChats = conversations.filter(
-        convs => convs.member_usernames.some(item => item.includes(searchText))
+    const filteredChats = conversations?.filter(
+        convs => convs?.members?.username?.some(item => item.includes(searchText))
     );
 
     useEffect(() => {

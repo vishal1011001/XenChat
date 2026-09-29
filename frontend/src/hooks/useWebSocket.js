@@ -27,7 +27,6 @@ export function useWebSocket(userUid, setConversations, setMessages, activeConvU
                         user_uid: userUid
                     })
                 }
-                console.log("MSG:", data.sent_at);
 
                 updateLastMessage(setConversations, data);
                 setMessages(prevM => [...prevM, data]);
@@ -42,7 +41,6 @@ export function useWebSocket(userUid, setConversations, setMessages, activeConvU
                 delete data.req
                 setConversations(prev => [data, ...prev]);
             } else if (data.req === 'update_last_read') {
-                console.log("READ UPDATE:", data.read_time);
                 markConversationReadLocally(setConversations, data.conv_uid, data.read_time, data.user_uid);
             }
         }
