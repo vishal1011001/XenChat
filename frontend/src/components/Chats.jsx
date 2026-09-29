@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
 import { FilterButtons } from "./ChatsComponents/FilterButtons";
 import { SearchBar } from "./ChatsComponents/SearchBar";
+import { ChatRow } from "./ChatsComponents/ChatRow";
 
 
 export function Chats({ conversations, setActiveConvUid, setIsChatOpen }) {
-    
-    const changeActiveConvUid = (conv_uid) => { 
+    const currUsername = JSON.parse(localStorage.getItem('xen_user_data'))?.username || '';
+
+    const changeActiveConvUid = (conv_uid) => {
         setActiveConvUid(conv_uid);
         setIsChatOpen(true);
     }
 
     const [convToDisplay, setConvToDisplay] = useState(conversations);
+    useEffect(() => {
+        setConvToDisplay(conversations);
+    }, [conversations]);
 
     return (
         <div className="h-screen w-[35vw] bg-slate-950 flex flex-col">
@@ -25,17 +30,21 @@ export function Chats({ conversations, setActiveConvUid, setIsChatOpen }) {
 
             <div className="overflow-y-scroll  scroll scroll-auto scrollbar-none">
                 <div className="p-2 pt-0 flex flex-col gap-2">
-                    {convToDisplay.map((chat) => (
-                        <div key={chat.conv_uid}
-                            onClick={() => changeActiveConvUid(chat.conv_uid)}
-                            className="flex flex-row pl-3 p-2 hover:bg-slate-900 rounded-xl mr-4">
-                            <img src={`/pfp1.png`} className="h-10 rounded-full self-center" />
-                            <div>
-                                <p className="text-xl text-white font-bold pl-4">{(chat?.conv_metadata?.conv_type === 'group') ? chat?.conv_metadata?.conv_name : chat?.member_usernames}</p>
-                                <p className="text-gray-400 pl-4 line-clamp-1">{chat.last_message}</p>
-                            </div>
-                        </div>
-                    ))}
+                    {convToDisplay.map((chat) => {
+                        const lastMsgSentAt = chat.last_message?.sent_at;
+                        const currUserLastReadAt = chat.members.find(mem => mem.username === currUsername).last_read_at;
+
+                        return (
+                            <ChatRow
+                                key={chat.conv_uid}
+                                chat={chat}
+                                currUsername={currUsername}
+                                lastMsgSentAt={lastMsgSentAt}
+                                currUserLastReadAt={currUserLastReadAt}
+                                onOpen={() => {changeActiveConvUid(chat.conv_uid)}}
+                            />
+                        );
+                    })}
                 </div>
             </div>
         </div>
