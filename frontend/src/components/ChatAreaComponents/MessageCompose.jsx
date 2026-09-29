@@ -9,6 +9,12 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
             conv_uid: activeConvUid,
             sender_uid: currUserUid
         });
+        sendMessage({
+            req: 'update_last_read',
+            user_uid: currUserUid,
+            conv_uid: activeConvUid
+        });
+
         setText('');
     }
 
