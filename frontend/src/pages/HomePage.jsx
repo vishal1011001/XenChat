@@ -2,7 +2,7 @@ import { ChatArea } from "../components/ChatArea";
 import { Chats } from "../components/Chats";
 import { Sidebar } from "../components/Sidebar";
 import axios from 'axios';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useNavigate } from "react-router-dom";
 import { MountUtilityInfo } from "../components/MountUtilityInfo";
@@ -16,12 +16,15 @@ export default function HomePage() {
     const [messages, setMessages] = useState([]);
 
     const [activeConvUid, setActiveConvUid] = useState('');
+    const activeConvUidRef = useRef(activeConvUid);
+    
     const [messagesToDisplay, setMessagesToDisplay] = useState([]);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [openChatMetadata, setOpenChatMetadata] = useState({});
 
     const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
-    const sendMessage = useWebSocket(currUserUid, setConversations, setMessages);
+    const currUsername = JSON.parse(localStorage.getItem('xen_user_data'))?.username || '';
+    const sendMessage = useWebSocket(currUserUid, setConversations, setMessages, activeConvUidRef);
 
 
     const handleRefreshToken = async (funcToRun) => {
@@ -88,37 +91,29 @@ export default function HomePage() {
         // get conversation metadata of current active conversation to display
         const conv_metadata = conversations.find(conv => conv.conv_uid === activeConvUid);
         setOpenChatMetadata(conv_metadata);
+
     }, [activeConvUid, messages]);
 
-    // adding last_message field to each 'conversations' object to be displayed in each chat preview (Chats component).
+    // updating last read at, when user opens a chat
     useEffect(() => {
-        if (!conversations || conversations.length === 0) return;
-
-        const newConvs = conversations.map(conv => {
-            const convMessages = messages.filter(m => m.conv_uid === conv.conv_uid);
-            if (convMessages.length === 0) return conv;
-
-            const latest = convMessages.reduce((a, b) => {
-                const ta = a.sent_at ? new Date(a.sent_at) : new Date(0);
-                const tb = b.sent_at ? new Date(b.sent_at) : new Date(0);
-                return (ta > tb) ? a : b;
-            })
-
-            return { ...conv, last_message: latest.content };
-        })
-
-        const changed = JSON.stringify(conversations) !== JSON.stringify(newConvs);
-        if (changed) {
-            setConversations(newConvs);
+        if (activeConvUid) {
+            sendMessage({
+                'req': 'update_last_read',
+                'conv_uid': activeConvUid,
+                'user_uid': currUserUid
+                //read-time (currently backend handles it)
+            });
         }
-    }, [conversations, messages]);
+
+        activeConvUidRef.current = activeConvUid;
+    },[activeConvUid]);
 
     return (
         <div className="h-screen w-screen flex flex-row">
             <Sidebar setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} sendMessage={sendMessage} />
             <Chats conversations={conversations} setActiveConvUid={setActiveConvUid} setIsChatOpen={setIsChatOpen} />
             {isChatOpen ? (
-                <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messagesToDisplay={messagesToDisplay} activeConvUid={activeConvUid} openChatMetadata={openChatMetadata} />
+                <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messagesToDisplay={messagesToDisplay} activeConvUid={activeConvUid} openChatMetadata={openChatMetadata} conversations={conversations} />
             ) : (
                 <MountUtilityInfo />
             )}
