@@ -102,7 +102,7 @@ export default function HomePage() {
     return (
         <div className="h-screen w-screen flex flex-row">
             <Sidebar setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} sendMessage={sendMessage} />
-            <Chats conversations={conversations} setActiveConvUid={setActiveConvUid} setIsChatOpen={setIsChatOpen} />
+            <Chats conversations={conversations} setConversations={setConversations} setActiveConvUid={setActiveConvUid} setIsChatOpen={setIsChatOpen} />
             {!isChatOpen ? (
                 <MountUtilityInfo />
             ) : (

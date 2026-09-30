@@ -4,7 +4,7 @@ import { SearchBar } from "./ChatsComponents/SearchBar";
 import { ChatRow } from "./ChatsComponents/ChatRow";
 
 
-export function Chats({ conversations, setActiveConvUid, setIsChatOpen }) {
+export function Chats({ conversations, setConversations, setActiveConvUid, setIsChatOpen }) {
     const currUsername = JSON.parse(localStorage.getItem('xen_user_data'))?.username || '';
 
     const changeActiveConvUid = (conv_uid) => {
@@ -15,6 +15,22 @@ export function Chats({ conversations, setActiveConvUid, setIsChatOpen }) {
     const [convToDisplay, setConvToDisplay] = useState(conversations);
     useEffect(() => {
         setConvToDisplay(conversations);
+    }, [conversations]);
+
+    useEffect(() => {
+        if (!conversations || conversations.length === 0) return;
+
+        const sorted = [...conversations].sort((a,b) => {
+            const ta = a.last_message.sent_at ? new Date(a.last_message.sent_at) : new Date(0);
+            const tb = b.last_message.sent_at ? new Date(b.last_message.sent_at) : new Date(0);
+            return tb - ta;
+        });
+
+        const sameOrder = 
+            sorted.length === conversations.length &&
+            sorted.every((c, i) => c.conv_uid === conversations[i].conv_uid);
+
+        if (!sameOrder) setConversations(sorted);
     }, [conversations]);
 
     return (
