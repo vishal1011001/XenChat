@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useNavigate } from "react-router-dom";
 import { MountUtilityInfo } from "../components/MountUtilityInfo";
+import { ChatMetadata } from "../components/ChatMetadata";
 
 
 export default function HomePage() {
@@ -17,10 +18,10 @@ export default function HomePage() {
 
     const [activeConvUid, setActiveConvUid] = useState('');
     const activeConvUidRef = useRef(activeConvUid);
-    
+
     const [messagesToDisplay, setMessagesToDisplay] = useState([]);
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [openChatMetadata, setOpenChatMetadata] = useState({});
+    const [isChatMetadataOpen, setIsChatMetadataOpen] = useState(false);
 
     const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
     const currUsername = JSON.parse(localStorage.getItem('xen_user_data'))?.username || '';
@@ -83,17 +84,6 @@ export default function HomePage() {
         retrieveChats();
     }, []);
 
-    useEffect(() => {
-        // Filter messages to display
-        const messagesFiltered = messages.filter(message => message.conv_uid === activeConvUid);
-        setMessagesToDisplay(messagesFiltered);
-
-        // get conversation metadata of current active conversation to display
-        const conv_metadata = conversations.find(conv => conv.conv_uid === activeConvUid);
-        setOpenChatMetadata(conv_metadata);
-
-    }, [activeConvUid, messages]);
-
     // updating last read at, when user opens a chat
     useEffect(() => {
         if (activeConvUid) {
@@ -106,16 +96,21 @@ export default function HomePage() {
         }
 
         activeConvUidRef.current = activeConvUid;
-    },[activeConvUid]);
+    }, [activeConvUid]);
+
 
     return (
         <div className="h-screen w-screen flex flex-row">
             <Sidebar setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} sendMessage={sendMessage} />
             <Chats conversations={conversations} setActiveConvUid={setActiveConvUid} setIsChatOpen={setIsChatOpen} />
-            {isChatOpen ? (
-                <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messagesToDisplay={messagesToDisplay} activeConvUid={activeConvUid} openChatMetadata={openChatMetadata} conversations={conversations} />
-            ) : (
+            {!isChatOpen ? (
                 <MountUtilityInfo />
+            ) : (
+                isChatMetadataOpen ? (
+                    <ChatMetadata />
+                ) : (
+                    <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messages={messages} activeConvUid={activeConvUid} isChatMetadataOpen={isChatMetadataOpen} conversations={conversations} />
+                )
             )}
         </div>
     );
