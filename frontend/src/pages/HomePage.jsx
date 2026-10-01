@@ -107,9 +107,9 @@ export default function HomePage() {
                 <MountUtilityInfo />
             ) : (
                 isChatMetadataOpen ? (
-                    <ChatMetadata />
+                    <ChatMetadata setIsChatMetadataOpen={setIsChatMetadataOpen} conversations={conversations} activeConvUid={activeConvUid}/>
                 ) : (
-                    <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messages={messages} activeConvUid={activeConvUid} isChatMetadataOpen={isChatMetadataOpen} conversations={conversations} />
+                    <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messages={messages} activeConvUid={activeConvUid} setIsChatMetadataOpen={setIsChatMetadataOpen} conversations={conversations} />
                 )
             )}
         </div>

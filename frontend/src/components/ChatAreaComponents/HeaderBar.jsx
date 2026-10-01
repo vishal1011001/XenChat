@@ -1,4 +1,4 @@
-export function HeaderBar({ isChatMetadataOpen, conversations, activeConvUid, currUserUid}) {
+export function HeaderBar({ conversations, activeConvUid, currUserUid}) {
     const displayName = conversations.map(conversation => {
         if (conversation.conv_uid === activeConvUid) {
             return conversation.members.map(member => {
