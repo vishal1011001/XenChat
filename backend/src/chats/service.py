@@ -1,7 +1,7 @@
 from .schemas import MessageModel, ConvCreateModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
-from sqlmodel import select, desc, asc, and_
+from sqlmodel import select, desc, asc, and_, delete
 from src.db.models import User, Conversation, ConversationMember, Message 
 from datetime import datetime
 import uuid
@@ -238,4 +238,16 @@ class ChatService():
         conv_mem_to_update = res.first()
         
         conv_mem_to_update.last_read_at = read_time
+        await session.commit()
+        
+    async def delete_conversation(self, conversation_uid: uuid.UUID, session: AsyncSession):
+        '''
+            Deleted a conversation, it's metadata and all messages of that conversation
+        '''
+        statement0 = delete(Message).where(Message.conv_uid == conversation_uid)
+        statement1 = delete(ConversationMember).where(ConversationMember.conv_uid == conversation_uid)
+        statement2 = delete(Conversation).where(Conversation.conv_uid == conversation_uid)
+        await session.exec(statement0)
+        await session.exec(statement1)
+        await session.exec(statement2)
         await session.commit()
