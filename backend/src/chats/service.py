@@ -257,8 +257,8 @@ class ChatService():
         await session.exec(statement2)
         await session.commit()
         return {
-            req: 'delete_conv',
-            conv_uid: conversation_uid 
+            'req': 'delete_conv',
+            'conv_uid': str(conversation_uid)
         }
         
     async def user_is_member_of_conv(self, user_uid: uuid.UUID, conversation_uid: uuid.UUID, session: AsyncSession):
