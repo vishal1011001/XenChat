@@ -21,8 +21,8 @@ export function Chats({ conversations, setConversations, setActiveConvUid, setIs
         if (!conversations || conversations.length === 0) return;
 
         const sorted = [...conversations].sort((a,b) => {
-            const ta = a.last_message.sent_at ? new Date(a.last_message.sent_at) : new Date(0);
-            const tb = b.last_message.sent_at ? new Date(b.last_message.sent_at) : new Date(0);
+            const ta = a?.last_message?.sent_at ? new Date(a.last_message.sent_at) : new Date(0);
+            const tb = b?.last_message?.sent_at ? new Date(b.last_message.sent_at) : new Date(0);
             return tb - ta;
         });
 

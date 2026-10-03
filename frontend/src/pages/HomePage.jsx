@@ -68,7 +68,7 @@ export default function HomePage() {
                 setConversations(data.conversations);
                 setMessages(data.messages);
             } else {
-                throw new Error('Error fetching conversations')
+                throw new Error('Error fetching conversations');
             }
         } catch (error) {
             if (error.status === 401) {
@@ -96,6 +96,7 @@ export default function HomePage() {
         }
 
         activeConvUidRef.current = activeConvUid;
+        setIsChatMetadataOpen(false);
     }, [activeConvUid]);
 
 
@@ -107,7 +108,7 @@ export default function HomePage() {
                 <MountUtilityInfo />
             ) : (
                 isChatMetadataOpen ? (
-                    <ChatMetadata setIsChatMetadataOpen={setIsChatMetadataOpen} conversations={conversations} activeConvUid={activeConvUid}/>
+                    <ChatMetadata API_URL={API_URL} setIsChatMetadataOpen={setIsChatMetadataOpen} setIsChatOpen={setIsChatOpen} conversations={conversations} activeConvUid={activeConvUid}/>
                 ) : (
                     <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messages={messages} activeConvUid={activeConvUid} setIsChatMetadataOpen={setIsChatMetadataOpen} conversations={conversations} />
                 )
