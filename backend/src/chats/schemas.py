@@ -39,7 +39,7 @@ class Member(BaseModel):
     
 class ConversationResponseModel(BaseModel):
     conv_uid: uuid.UUID
-    last_message: MessageResponseModel
+    last_message: MessageResponseModel | None
     conv_metadata: ConversationMetadataResponseModel
     members: List[Member]
     

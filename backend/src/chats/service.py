@@ -240,14 +240,33 @@ class ChatService():
         conv_mem_to_update.last_read_at = read_time
         await session.commit()
         
-    async def delete_conversation(self, conversation_uid: uuid.UUID, session: AsyncSession):
+    async def delete_conversation(self, user_uid: uuid.UUID, conversation_uid: uuid.UUID, session: AsyncSession):
         '''
             Deleted a conversation, it's metadata and all messages of that conversation
         '''
+        is_member = await self.user_is_member_of_conv(user_uid, conversation_uid, session)
+        if not is_member:
+            return 'Forbidden'
+        
         statement0 = delete(Message).where(Message.conv_uid == conversation_uid)
         statement1 = delete(ConversationMember).where(ConversationMember.conv_uid == conversation_uid)
         statement2 = delete(Conversation).where(Conversation.conv_uid == conversation_uid)
+        
         await session.exec(statement0)
         await session.exec(statement1)
         await session.exec(statement2)
         await session.commit()
+        return {
+            req: 'delete_conv',
+            conv_uid: conversation_uid 
+        }
+        
+    async def user_is_member_of_conv(self, user_uid: uuid.UUID, conversation_uid: uuid.UUID, session: AsyncSession):
+        '''
+            Check if giver user (uid) is a member of a given conversation (uid)
+        '''
+        statement0 = select(ConversationMember).where(and_(ConversationMember.conv_uid == conversation_uid, ConversationMember.user_uid == user_uid))
+        result = await session.exec(statement0)
+        result = result.first()
+        print(result)
+        return True if result else False
