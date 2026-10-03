@@ -1,9 +1,14 @@
-export function ChatMetadata({ setIsChatMetadataOpen, conversations, activeConvUid }) {
+import { OptionsMenu } from "./ChatMetadataComponents/OptionsMenu";
+
+export function ChatMetadata({ API_URL, setIsChatMetadataOpen, setIsChatOpen, conversations, activeConvUid }) {
+    const currUserData = JSON.parse(localStorage.getItem('xen_user_data'));
+    
     const closeChatMetadata = () => {
         setIsChatMetadataOpen(false);
     }
 
-    const openedConvData = conversations.find(conv => conv.conv_uid === activeConvUid);
+    const openedConvData = conversations?.find(conv => conv.conv_uid === activeConvUid);
+    const username = openedConvData?.members?.find(member => member.username != currUserData?.username)?.username;
 
     return (
         <div className="h-screen bg-slate-800 w-full flex flex-col items-center p-4 overflow-scroll scrollbar-none scroll-auto scroll">
@@ -22,40 +27,19 @@ export function ChatMetadata({ setIsChatMetadataOpen, conversations, activeConvU
             </div>
 
             <div>
-                <h2 className="text-white text-3xl font-bold">@vishal</h2>
+                <h2 className="text-white text-3xl font-bold">@{username}</h2>
             </div>
 
             <div className="w-full p-2 pt-4">
-                <h3 className="text-xl text-white mb-1">Media & Links</h3>
+                <h3 className="text-xl text-white mb-1">Shared Media & Links</h3>
                 <div className="h-25 bg-slate-400 rounded-md">
 
                 </div>
             </div>
-            
-            <div className="flex flex-col w-full items-start text-red-600 text-xl p-2 pt-4 gap-1 shadow-slate-500
-                         *:hover:bg-slate-600 *:p-3 *:w-75"
-            >
-                {/* <h3 className="text-white text-xl">Options:</h3> */}
-                <button className="flex items-center gap-1 text-white">
-                    <img src="/pin.png" className="h-6"/>
-                    Pin this Chat
-                </button>
-                <button className="flex items-center gap-1">
-                    <img src="/warning.png" className="h-7"/>
-                    Clear Chat
-                </button>
-                <button className="flex items-center gap-1">
-                    <img src="/delete.png" className="h-5"/>
-                    Delete Chat
-                </button>
-                <button className="flex items-center gap-2">
-                    <img src="/block.png" className="h-5"/>
-                    Block @vishal
-                </button>
-                <button className="flex items-center gap-1">
-                    <img src="/notice.png" className="h-6"/>
-                    Report @vishal
-                </button>
+
+            <div className="p-2 pt-4 flex flex-col w-full">
+                <h3 className="text-white text-xl w-full pb-2">Options:</h3>
+                <OptionsMenu API_URL={API_URL} username={username} activeConvUid={activeConvUid} setIsChatMetadataOpen={setIsChatMetadataOpen} setIsChatOpen={setIsChatOpen} />
             </div>
 
         </div>
