@@ -49,3 +49,22 @@ async def create_conversation(
     return {
         "conv_uid": conv_uid
     }
+    
+@chat_router.delete('/{conv_uid}')
+async def delete_conversation(
+    conv_uid: uuid.UUID,
+    token_data: dict = Depends(access_token_bearer),
+    session: AsyncSession = Depends(get_session)
+):
+    member_uids = await chat_service.conv_members(conv_uid, session)
+    
+    user_uid = token_data['user']['uid']
+    service_response = await chat_service.delete_conversation(user_uid, conv_uid, session)
+    if service_response == 'Forbidden':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail=service_response)
+    
+    await manager.broadcast(member_uids, service_response)
+    return {
+        'message': service_response
+    }
