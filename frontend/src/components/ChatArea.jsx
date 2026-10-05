@@ -2,7 +2,8 @@ import { HeaderBar } from "./ChatAreaComponents/HeaderBar";
 import { MessageCompose } from "./ChatAreaComponents/MessageCompose";
 import { Messages } from "./ChatAreaComponents/Messages";
 import { useWebSocket } from "../hooks/useWebSocket";
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
+import { getDisplayName } from "./utils/utilityFunctions";
 
 export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, setIsChatMetadataOpen, conversations }) {
     const [wantToEdit, setWantToEdit] = useState(false);
@@ -10,16 +11,17 @@ export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, se
 
     const [text, setText] = useState('');
 
+    const displayName = getDisplayName(conversations, activeConvUid, currUserUid);
+
     return (
-        <div className="h-screen bg-[url('/chat-bg.jpg')] bg-cover bg-fixed w-full flex flex-col justify-between pb-2 pt-15 overflow-scroll scrollbar-none scroll-auto scroll">
+        <div className="h-screen bg-[url('/chat-bg.jpg')] bg-cover bg-fixed w-full flex flex-col pb-2 pt-20 overflow-scroll scrollbar-none scroll-auto scroll">
             <div onClick={() => {setIsChatMetadataOpen(true)}}>
-                <HeaderBar conversations={conversations} activeConvUid={activeConvUid} currUserUid={currUserUid}/>
+                <HeaderBar displayName={displayName}/>
             </div>
 
-            <div className="bg-slate-900 mt-5 w-100 place-self-center p-3 rounded text-center">
+            <div className="bg-slate-900 place-self-center p-3 rounded text-center">
                 <p className="text-white">
-                    {`This is the start of your conversation with @.
-                    Messages are end-to-end Ecrypted 🔒`}
+                    {`This is the start of your conversation with @${displayName}`}
                 </p>
             </div>
 

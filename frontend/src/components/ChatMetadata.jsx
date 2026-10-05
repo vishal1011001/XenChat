@@ -1,4 +1,5 @@
 import { OptionsMenu } from "./ChatMetadataComponents/OptionsMenu";
+import { getDisplayName } from "./utils/utilityFunctions";
 
 export function ChatMetadata({ API_URL, setIsChatMetadataOpen, setIsChatOpen, conversations, activeConvUid }) {
     const currUserData = JSON.parse(localStorage.getItem('xen_user_data'));
@@ -7,8 +8,7 @@ export function ChatMetadata({ API_URL, setIsChatMetadataOpen, setIsChatOpen, co
         setIsChatMetadataOpen(false);
     }
 
-    const openedConvData = conversations?.find(conv => conv.conv_uid === activeConvUid);
-    const username = openedConvData?.members?.find(member => member.username != currUserData?.username)?.username;
+    const username = getDisplayName(conversations, activeConvUid, currUserData.user_uid);
 
     return (
         <div className="h-screen bg-slate-800 w-full flex flex-col items-center p-4 overflow-scroll scrollbar-none scroll-auto scroll">
