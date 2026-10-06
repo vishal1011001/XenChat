@@ -1,2 +1,8 @@
+[project]
+name = "xenchat-backend"
+version = "0.1.0"
+description = "XenChat FastAPI backend"
+requires-python = "==3.13.*"
+
 [tool.fastapi]
 entrypoint = "src:app"
