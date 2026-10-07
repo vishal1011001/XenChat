@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { MessageOptions } from "./MessagesComponents/MessageOptions";
 
 export function Messages({ sendMessage, activeConvUid, messages, currUserUid, setWantToEdit, setMessageUidToEdit, setText, conversations }) {
     const messagesEndRef = useRef(null);
@@ -50,15 +51,15 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
         <div className="p-4 z-1 flex flex-col gap-1.5 **:overflow-y-auto scroll-auto pb-13 justify-end *:rounded-xl **:max-w-2xl **:flex **:flex-col">
             {messagesToDisplay.map((message) => {
                 const otherMember = conversations
-                    .find(conv => conv.conv_uid === message.conv_uid)
+                    ?.find(conv => conv.conv_uid === message.conv_uid)
                     ?.members.find(mem => mem.user_uid !== currUserUid);
 
-                const isRead = new Date(message.sent_at) <= new Date(otherMember.last_read_at);
+                const isRead = new Date(message.sent_at) <= new Date(otherMember?.last_read_at);
 
                 return (
                     <div key={message.message_uid}
                         className={(message.sender_uid === currUserUid) ?
-                            "flex flex-col bg-white p-2 place-self-end-safe min-w-40 min-h-15 relative group" :
+                            "flex flex-col bg-white p-2 place-self-end-safe min-w-40 min-h-15 relative group overflow-visible!" :
                             "flex flex-col bg-slate-800 p-2 text-white place-self-start min-w-40 relative group"
                         }
                     >
@@ -77,20 +78,11 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                         {message.sender_uid === currUserUid && (
                             <button
                                 onClick={() => selectMessage(message.message_uid)}
-                                className="absolute right-2 top-0 opacity-0 group-hover:opacity-80"
-                            >v</button>
+                                className="absolute -left-7 self-center opacity-0 group-hover:opacity-100"
+                            ><img src='/down-arrow.png' className="h-6 invert-100" /></button>
                         )}
                         {(msgOptionsOpen && message.message_uid === selectedMessageUid && message.sender_uid === currUserUid) && (
-                            <div className="absolute bg-gray-600 text-white p-1 rounded right-1 bottom-1">
-                                <button
-                                    onClick={deleteMessage}
-                                    className=""
-                                >Delete</button>
-                                <button
-                                    onClick={() => changeEditingState(message.message_uid, message.content)}
-                                    className=""
-                                >Edit</button>
-                            </div>
+                            <MessageOptions message={message} deleteMessage={deleteMessage} changeEditingState={changeEditingState}/>
                         )}
                     </div>
                 )
