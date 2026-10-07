@@ -4,7 +4,7 @@ import { SearchBar } from "./ChatsComponents/SearchBar";
 import { ChatRow } from "./ChatsComponents/ChatRow";
 
 
-export function Chats({ conversations, setConversations, activeConvUid, setActiveConvUid, setIsChatOpen }) {
+export function Chats({ conversations, setConversations, activeConvUid, setActiveConvUid, setIsChatOpen, isChatsLoading }) {
     const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
 
     const changeActiveConvUid = (conv_uid) => {
@@ -20,13 +20,13 @@ export function Chats({ conversations, setConversations, activeConvUid, setActiv
     useEffect(() => {
         if (!conversations || conversations.length === 0) return;
 
-        const sorted = [...conversations].sort((a,b) => {
+        const sorted = [...conversations].sort((a, b) => {
             const ta = a?.last_message?.sent_at ? new Date(a.last_message.sent_at) : new Date(0);
             const tb = b?.last_message?.sent_at ? new Date(b.last_message.sent_at) : new Date(0);
             return tb - ta;
         });
 
-        const sameOrder = 
+        const sameOrder =
             sorted.length === conversations.length &&
             sorted.every((c, i) => c.conv_uid === conversations[i].conv_uid);
 
@@ -46,6 +46,11 @@ export function Chats({ conversations, setConversations, activeConvUid, setActiv
 
             <div className="overflow-y-scroll  scroll scroll-auto scrollbar-none">
                 <div className="p-2 pt-0 flex flex-col gap-2">
+                    {isChatsLoading && (
+                        <div className="flex text-white text-xl gap-1.5 place-self-center">
+                            Loading Chats <div className="h-6 w-6 animate-spin rounded-full border-3 border-slate-400 border-t-slate-700 border-b-slate-700"></div>
+                        </div>
+                    )}
                     {convToDisplay.map((chat) => {
                         const lastMsgSenderUid = chat.last_message?.sender_uid;
                         const lastMsgConvUid = chat.last_message?.conv_uid;
@@ -62,7 +67,7 @@ export function Chats({ conversations, setConversations, activeConvUid, setActiv
                                 lastMsgSenderUid={lastMsgSenderUid}
                                 lastMsgConvUid={lastMsgConvUid}
                                 activeConvUid={activeConvUid}
-                                onOpen={() => {changeActiveConvUid(chat.conv_uid)}}
+                                onOpen={() => { changeActiveConvUid(chat.conv_uid) }}
                             />
                         );
                     })}

@@ -53,9 +53,12 @@ export default function HomePage() {
         }
     }
 
+    const [isChatsLoading, setIsChatsLoading] = useState(false);
+
     const retrieveChats = async (e) => {
         e?.preventDefault();
         try {
+            setIsChatsLoading(true);
             const token = localStorage.getItem('xen_access_token');
             const response = await axios.get(`${API_URL}/chats`, {
                 headers: {
@@ -67,8 +70,10 @@ export default function HomePage() {
                 const data = response.data;
                 setConversations(data.conversations);
                 setMessages(data.messages);
+                setIsChatsLoading(false);
             } else {
                 throw new Error('Error fetching conversations');
+                setIsChatsLoading(false);
             }
         } catch (error) {
             if (error.status === 401) {
@@ -103,7 +108,7 @@ export default function HomePage() {
     return (
         <div className="h-screen w-screen flex flex-row">
             <Sidebar setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} sendMessage={sendMessage} />
-            <Chats conversations={conversations} setConversations={setConversations} activeConvUid={activeConvUid} setActiveConvUid={setActiveConvUid} setIsChatOpen={setIsChatOpen} />
+            <Chats conversations={conversations} setConversations={setConversations} activeConvUid={activeConvUid} setActiveConvUid={setActiveConvUid} setIsChatOpen={setIsChatOpen} isChatsLoading={isChatsLoading} />
             {!isChatOpen ? (
                 <MountUtilityInfo />
             ) : (
