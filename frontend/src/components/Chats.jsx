@@ -4,8 +4,8 @@ import { SearchBar } from "./ChatsComponents/SearchBar";
 import { ChatRow } from "./ChatsComponents/ChatRow";
 
 
-export function Chats({ conversations, setConversations, setActiveConvUid, setIsChatOpen }) {
-    const currUsername = JSON.parse(localStorage.getItem('xen_user_data'))?.username || '';
+export function Chats({ conversations, setConversations, activeConvUid, setActiveConvUid, setIsChatOpen }) {
+    const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
 
     const changeActiveConvUid = (conv_uid) => {
         setActiveConvUid(conv_uid);
@@ -47,16 +47,21 @@ export function Chats({ conversations, setConversations, setActiveConvUid, setIs
             <div className="overflow-y-scroll  scroll scroll-auto scrollbar-none">
                 <div className="p-2 pt-0 flex flex-col gap-2">
                     {convToDisplay.map((chat) => {
+                        const lastMsgSenderUid = chat.last_message?.sender_uid;
+                        const lastMsgConvUid = chat.last_message?.conv_uid;
                         const lastMsgSentAt = chat.last_message?.sent_at;
-                        const currUserLastReadAt = chat.members.find(mem => mem.username === currUsername).last_read_at;
+                        const currUserLastReadAt = chat.members?.find(mem => mem.user_uid === currUserUid)?.last_read_at;
 
                         return (
                             <ChatRow
                                 key={chat.conv_uid}
                                 chat={chat}
-                                currUsername={currUsername}
+                                currUserUid={currUserUid}
                                 lastMsgSentAt={lastMsgSentAt}
                                 currUserLastReadAt={currUserLastReadAt}
+                                lastMsgSenderUid={lastMsgSenderUid}
+                                lastMsgConvUid={lastMsgConvUid}
+                                activeConvUid={activeConvUid}
                                 onOpen={() => {changeActiveConvUid(chat.conv_uid)}}
                             />
                         );
