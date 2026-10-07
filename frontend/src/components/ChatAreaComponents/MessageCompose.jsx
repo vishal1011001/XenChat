@@ -31,9 +31,19 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
         setWantToEdit(false);
     }
 
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            event?.preventDefault();
+            
+            if (wantToEdit) handleEditMessage();
+            else handleSendMessage();
+        }
+    }
+
     return (
         <div className="flex felx-col w-[66vw] gap-x-2 justify-center fixed bottom-2 self-center-safe z-2">
             <input placeholder="Type a message..."
+                onKeyDown={handleKeyDown}
                 value={text}
                 onChange={(e) => (setText(e.target.value))}
                 className="p-3 bg-blue-950 text-white rounded-4xl placeholder-white w-full"
