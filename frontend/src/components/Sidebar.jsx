@@ -46,7 +46,7 @@ export function Sidebar({ setConversations, API_URL, handleRefreshToken, setActi
                     <img src="/add.png" className="invert-100" />
                 </button>
                 {wantToStartConv && (
-                    <StartNewConversation setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} />
+                    <StartNewConversation setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} setWantToStartConv={setWantToStartConv} />
                 )}
                 <button onClick={handleLogout}>
                     <img src='/logout.png' className='h-7 invert-100' />

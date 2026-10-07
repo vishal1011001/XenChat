@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from 'axios';
 
-export function StartNewConversation({ setConversations, API_URL, handleRefreshToken, setActiveConvUid }) {
-    const AUTH_API_URL = 'http://localhost:8000/api/v1/auth';
+export function StartNewConversation({ setConversations, API_URL, handleRefreshToken, setActiveConvUid, setWantToStartConv }) {
+    const AUTH_API_URL = 'https://xenchat-backend.fastapicloud.dev/api/v1/auth';
     const [username, setUsername] = useState('');
     const [response, setResponse] = useState('');
     const [userFound, setUserFound] = useState(false);
@@ -88,6 +88,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
                 const data = response.data;
                 // Actual new conv metadata response will come via socket connection.
                 setActiveConvUid(data.conv_uid);
+                setWantToStartConv(false);
             }
         } catch (error) {
             if (error.status === 401) {
