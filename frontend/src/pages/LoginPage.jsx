@@ -8,13 +8,13 @@ import { signinCredsValidator } from "../components/LoginPageComponents/utils";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const AUTH_API_URL = 'http://localhost:8000/api/v1/auth';
+    const AUTH_API_URL = 'https://xenchat-backend.fastapicloud.dev/api/v1/auth';
 
     const [userData, setUserData] = useState(() => {
         const raw = localStorage.getItem('xen_user_data');
         return raw ? JSON.parse(raw) : null;
     });
-    
+
     const [wantToLogin, setWantToLogin] = useState(true);
     const [loginFailed, setLoginFailed] = useState(false);
     const [loginErrorMessage, setLoginErrorMessage] = useState('Server error, try again later');
@@ -26,7 +26,7 @@ export default function LoginPage() {
 
     const handleLogin = async (e, creds) => {
         e?.preventDefault();
-        
+
         if (!signinCredsValidator(creds, setLoginFailed, setLoginErrorMessage)) {
             throw new Error('Error in credentials')
         }
@@ -51,7 +51,7 @@ export default function LoginPage() {
             console.log(loginErrorMessage)
             console.error('Error singing in:', error)
         }
-    };        
+    };
 
 
     return (
@@ -63,7 +63,7 @@ export default function LoginPage() {
                     {wantToLogin ? (
                         <Signin handleLogin={handleLogin} loginFailed={loginFailed} loginErrorMessage={loginErrorMessage} />
                     ) : (
-                        <Signup AUTH_API_URL={AUTH_API_URL} setUserData={setUserData} handleLogin={handleLogin} loginFailed={loginFailed} setLoginFailed={setLoginFailed} loginErrorMessage={loginErrorMessage} setLoginErrorMessage={setLoginErrorMessage}/>
+                        <Signup AUTH_API_URL={AUTH_API_URL} setUserData={setUserData} handleLogin={handleLogin} loginFailed={loginFailed} setLoginFailed={setLoginFailed} loginErrorMessage={loginErrorMessage} setLoginErrorMessage={setLoginErrorMessage} />
                     )}
 
                     <p className="mt-4">
