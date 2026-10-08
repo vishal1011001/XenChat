@@ -16,14 +16,14 @@ export function ChatMetadata({ API_URL, setIsChatMetadataOpen, setIsChatOpen, co
                 <button
                     onClick={closeChatMetadata}
                     className="p-2 rounded-4xl hover:bg-slate-700"
-                ><img src='/previous.png' className="h-5 invert-100" /></button>
+                ><img src='/icons/previous.svg' className="h-5 invert-100" /></button>
                 <h3
                     className="text-white text-xl "
                 >Chat Info</h3>
             </div>
 
             <div>
-                <img src='/default-pfp.png' className="h-50" />
+                <img src='/icons/default-pfp.svg' className="h-50" />
             </div>
 
             <div>

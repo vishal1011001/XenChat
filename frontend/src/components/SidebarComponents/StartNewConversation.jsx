@@ -158,7 +158,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
                             <div key={member.username}
                                 className="flex flex-row items-center gap-2 w-full pr-2"
                             >
-                                <img src='/default-pfp.png' className="h-12" />
+                                <img src='/icons/default-pfp.svg' className="h-12" />
                                 <h4 className="text-xl font-semibold">{member.username}</h4>
                                 {(member.username !== currUsername) && (
                                     <button

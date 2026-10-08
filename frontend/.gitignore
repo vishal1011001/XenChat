@@ -1,7 +1,6 @@
 public/**/*.png
 public/**/*.jpg
 public/**/*.jpeg
-public/**/*.svg
 public/**/*.gif
 
 # Logs

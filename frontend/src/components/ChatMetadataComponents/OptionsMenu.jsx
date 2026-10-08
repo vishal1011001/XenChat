@@ -26,26 +26,26 @@ export function OptionsMenu({ API_URL, username, activeConvUid, setIsChatMetadat
                          *:hover:bg-slate-950 *:p-3 *:px-5 *:w-70 *:rounded-xl"
         >
             <button className="flex items-center text-white">
-                <img src="/pin.png" className="h-6 w-6" />
+                <img src="/icons/pin.svg" className="h-6 w-6" />
                 <p className="pl-4">Pin this Chat</p>
             </button>
             <button className="flex items-center gap-1">
-                <img src="/warning.png" className="h-6 w-6" />
+                <img src="/icons/warning.svg" className="h-6 w-6" />
                 <p className="pl-3">Clear Chat</p>
             </button>
             <button 
                 className="flex items-center gap-1"
                 onClick={handleDeleteConv}
             >
-                <img src="/delete.png" className="h-6 w-6" />
+                <img src="/icons/delete.svg" className="h-6 w-6" />
                 <p className="pl-3">Delete Chat</p>
             </button>
             <button className="flex items-center gap-2">
-                <img src="/block.png" className="h-6 w-6" />
+                <img src="/icons/block.svg" className="h-6 w-6" />
                 <p className="pl-2">Block @{username}</p>
             </button>
             <button className="flex items-center gap-1">
-                <img src="/notice.png" className="h-6 w-6" />
+                <img src="/icons/notice.svg" className="h-6 w-6" />
                 <p className="pl-3">Report this chat</p>
             </button>
         </div>

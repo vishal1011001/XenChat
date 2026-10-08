@@ -8,8 +8,8 @@ export function OAuthOptions() {
             </div>
 
             <div className="flex flex-row gap-3 *:hover:bg-gray-300 *:p-2 *:rounded-full">
-                <button><img src="/google-logo.png" className="h-6 w-6" /></button>
-                <button><img src="/microsoft-logo.png" className="h-6 w-6" /></button>
+                <button><img src="/icons/google-logo.svg" className="h-6 w-6" /></button>
+                <button><img src="/icons/microsoft-logo.svg" className="h-6 w-6" /></button>
             </div>
         </>
     );

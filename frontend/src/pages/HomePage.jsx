@@ -72,8 +72,8 @@ export default function HomePage() {
                 setMessages(data.messages);
                 setIsChatsLoading(false);
             } else {
-                throw new Error('Error fetching conversations');
                 setIsChatsLoading(false);
+                throw new Error('Error fetching conversations');
             }
         } catch (error) {
             if (error.status === 401) {

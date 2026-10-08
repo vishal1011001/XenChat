@@ -37,7 +37,7 @@ export function Chats({ conversations, setConversations, activeConvUid, setActiv
         <div className="h-screen w-[35vw] bg-slate-950 flex flex-col">
             <div className="p-4 pl-6 w-[28vw] flex flex-row justify-between items-center">
                 <h2 className="text-2xl text-white font-bold">XenChat</h2>
-                <button className="text-white rounded-full p-1 hover:bg-slate-700"><img src='/more.png' className="h-8 invert-100" /></button>
+                <button className="text-white rounded-full p-1 hover:bg-slate-700"><img src='/icons/more.svg' className="h-8 invert-100" /></button>
             </div>
 
             <SearchBar conversations={conversations} setConvToDisplay={setConvToDisplay} />
@@ -50,6 +50,12 @@ export function Chats({ conversations, setConversations, activeConvUid, setActiv
                         <div className="flex text-white text-xl gap-1.5 place-self-center">
                             Loading Chats <div className="h-6 w-6 animate-spin rounded-full border-3 border-slate-400 border-t-slate-700 border-b-slate-700"></div>
                         </div>
+                    )}
+                    {!isChatsLoading && convToDisplay.length === 0 && (
+                        <>
+                            <p className="text-md text-white place-self-center">No Chats</p>
+                            <p className="text-md text-white place-self-center">Start a chat by clicking '+' icon</p>
+                        </>
                     )}
                     {convToDisplay.map((chat) => {
                         const lastMsgSenderUid = chat.last_message?.sender_uid;

@@ -35,21 +35,21 @@ export function Sidebar({ setConversations, API_URL, handleRefreshToken, setActi
         <div className="h-screen w-[5vw] bg-slate-900 flex flex-col pt-3">
             <div className="flex flex-col gap-4 items-center p-2 *:text-white *:rounded-full *:p-1 *:hover:bg-gray-600 ">
                 <button className="h-10 w-10">
-                    <img src="/chat.png" className="invert-100 w-6 place-self-center-safe" />
+                    <img src="/icons/chat.svg" className="invert-100 w-6 place-self-center-safe" />
                 </button>
                 <button className="h-10 w-10">
-                    <img src="/bot.png" className="invert-100 w-7 place-self-center-safe" />
+                    <img src="/icons/bot.svg" className="invert-100 w-7 place-self-center-safe" />
                 </button>
                 <button
                     onClick={toggleWantNewConversation}
                     className="h-10 w-10">
-                    <img src="/add.png" className="invert-100" />
+                    <img src="/icons/add.svg" className="invert-100" />
                 </button>
                 {wantToStartConv && (
                     <StartNewConversation setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} setWantToStartConv={setWantToStartConv} />
                 )}
                 <button onClick={handleLogout}>
-                    <img src='/logout.png' className='h-7 invert-100' />
+                    <img src='/icons/logout.svg' className='h-7 invert-100' />
                 </button>
             </div>
         </div>
