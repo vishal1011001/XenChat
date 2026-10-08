@@ -6,7 +6,7 @@ export function useWebSocket(userUid, setConversations, setMessages, activeConvU
 
     useEffect(() => {
         const socket = new WebSocket(
-            `ws://localhost:8000/ws/${userUid}`
+            `https://xenchat-backend.fastapicloud.dev/ws/${userUid}`
         )
         socketRef.current = socket;
 
