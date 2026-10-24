@@ -1,12 +1,14 @@
 import { useRef, useEffect } from "react";
 import { markConversationReadLocally, updateLastMessage } from "./utils";
+import { HOSTED_SOCKET_URL, LOCAL_SOCKET_URL } from "../URLs/endpoints";
 
 export function useWebSocket(userUid, setConversations, setMessages, activeConvUidRef) {
     const socketRef = useRef(null);
-
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
     useEffect(() => {
         const socket = new WebSocket(
-            `https://xenchat-backend.fastapicloud.dev/ws/${userUid}`
+            `${isLocal ? `${LOCAL_SOCKET_URL}/${userUid}` : `${HOSTED_SOCKET_URL}/${userUid}`}`
         )
         socketRef.current = socket;
 
