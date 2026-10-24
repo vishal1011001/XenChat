@@ -7,12 +7,13 @@ import { useWebSocket } from "../hooks/useWebSocket";
 import { useNavigate } from "react-router-dom";
 import { MountUtilityInfo } from "../components/MountUtilityInfo";
 import { ChatMetadata } from "../components/ChatMetadata";
-
+import { HOSTED_API_URL, LOCAL_API_URL } from "../URLs/endpoints";
 
 export default function HomePage() {
     const nav = useNavigate();
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-    const API_URL = 'https://xenchat-backend.fastapicloud.dev/api/v1';
+    const API_URL = isLocal ? LOCAL_API_URL : HOSTED_API_URL;
     const [conversations, setConversations] = useState([]);
     const [messages, setMessages] = useState([]);
 

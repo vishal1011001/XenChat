@@ -5,10 +5,12 @@ import { Signup } from "../components/LoginPageComponents/Signup";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import { signinCredsValidator } from "../components/LoginPageComponents/utils";
+import { LOCAL_AUTH_API_URL, HOSTED_AUTH_API_URL } from "../URLs/endpoints";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const AUTH_API_URL = 'https://xenchat-backend.fastapicloud.dev/api/v1/auth';
+    const isLocal = window.location.hostname == 'localhost' || window.location.hostname == '127.0.0.1'
+    const AUTH_API_URL = isLocal ? LOCAL_AUTH_API_URL : HOSTED_AUTH_API_URL;
 
     const [userData, setUserData] = useState(() => {
         const raw = localStorage.getItem('xen_user_data');

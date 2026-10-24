@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { HOSTED_AUTH_API_URL, LOCAL_AUTH_API_URL } from "../../URLs/endpoints";
 
 export function StartNewConversation({ setConversations, API_URL, handleRefreshToken, setActiveConvUid, setWantToStartConv }) {
-    const AUTH_API_URL = 'https://xenchat-backend.fastapicloud.dev/api/v1/auth';
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    const AUTH_API_URL = isLocal ? LOCAL_AUTH_API_URL : HOSTED_AUTH_API_URL;
     const [username, setUsername] = useState('');
     const [response, setResponse] = useState('');
     const [userFound, setUserFound] = useState(false);
