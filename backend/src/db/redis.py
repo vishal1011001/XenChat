@@ -1,11 +1,9 @@
 from redis.asyncio import from_url
 from src.config import Config
-from src.auth.utils import decode_token
 import time
 
-token_blocklist = from_url(Config.REDIS_URL, decode_responses=True)
+token_blocklist = from_url(Config.redis_url, decode_responses=True)
 
-JTI_EXPIRY_TIME=84600
 
 async def add_jti_to_blocklist(token_data) -> None:
     exp = token_data['exp']
