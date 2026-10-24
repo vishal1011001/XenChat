@@ -79,7 +79,7 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                             <button
                                 onClick={() => selectMessage(message.message_uid)}
                                 className="absolute -left-7 self-center opacity-0 group-hover:opacity-100"
-                            ><img src='/down-arrow.png' className="h-6 invert-100" /></button>
+                            ><img src='/icons/down-arrow.svg' className="h-6 invert-100" /></button>
                         )}
                         {(msgOptionsOpen && message.message_uid === selectedMessageUid && message.sender_uid === currUserUid) && (
                             <MessageOptions message={message} deleteMessage={deleteMessage} changeEditingState={changeEditingState}/>
