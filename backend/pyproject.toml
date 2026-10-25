@@ -2,7 +2,7 @@
 name = "xenchat-backend"
 version = "0.1.0"
 description = "XenChat FastAPI backend"
-requires-python = ">=3.10"
+requires-python = ">=3.12, <3.14"
 dependencies = [
     "alembic==1.18.5",
     "annotated-doc==0.0.4",
