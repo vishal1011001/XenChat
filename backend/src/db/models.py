@@ -84,3 +84,26 @@ class Message(SQLModel, table=True):
     
     sent_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     edited_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    
+# Stores path and other metadata of file in postgres table
+class FileMetadata(SQLModel, table=True):
+    __tablename__='file_metadata'
+    
+    file_uid: str = Field(
+        sa_column = Column(
+            pg.UUID,
+            nullable=False,
+            primary_key=True,
+            default=uuid.uuid4
+        )
+    )
+    
+    #Manual Entry of following 5 at backend 
+    file_name: str
+    file_path: str
+    caption: str
+    sender_uid: uuid.UUID = Field(foreign_key='users.user_uid')
+    conv_uid: uuid.UUID = Field(foreign_key='conversation.conv_uid')
+    
+    sent_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
