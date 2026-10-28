@@ -73,7 +73,7 @@ class Message(SQLModel, table=True):
         )
     )
     
-    #manual entry of following 3 fields at backend level
+    #manual entry of following 5 fields at backend level
     content: str
     conv_uid: uuid.UUID = Field(
         foreign_key='conversation.conv_uid'
@@ -82,8 +82,15 @@ class Message(SQLModel, table=True):
         foreign_key='users.user_uid'
     )
     
+    message_type: str
+    file_uid: uuid.UUID = Field(
+        foreign_key='file_metadata.file_uid',
+        nullable=True
+    )
+    
     sent_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     edited_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    
     
 # Stores path and other metadata of file in postgres table
 class FileMetadata(SQLModel, table=True):
@@ -98,12 +105,8 @@ class FileMetadata(SQLModel, table=True):
         )
     )
     
-    #Manual Entry of following 5 at backend 
+    #Manual Entry of following 2 at backend 
     file_name: str
     file_path: str
-    caption: str
-    sender_uid: uuid.UUID = Field(foreign_key='users.user_uid')
-    conv_uid: uuid.UUID = Field(foreign_key='conversation.conv_uid')
     
     sent_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
-    updated_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
