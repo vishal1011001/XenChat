@@ -44,8 +44,7 @@ export function useWebSocket(userUid, setConversations, setMessages, activeConvU
                 setConversations(prev => [data, ...prev]);
             } else if (data.req === 'update_last_read') {
                 markConversationReadLocally(setConversations, data.conv_uid, data.read_time, data.user_uid);
-            }
-            else if (data.req === 'delete_conv') {
+            } else if (data.req === 'delete_conv') {
                 setConversations(prev => prev.filter(conv => conv.conv_uid !== data.conv_uid))
             }
         }

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageOptions } from "./MessagesComponents/MessageOptions";
+import { FileContent } from "./MessagesComponents/FileContent";
 
 export function Messages({ sendMessage, activeConvUid, messages, currUserUid, setWantToEdit, setMessageUidToEdit, setText, conversations }) {
     const messagesEndRef = useRef(null);
@@ -62,7 +63,10 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                             "flex flex-col bg-white p-2 place-self-end-safe min-w-40 min-h-15 relative group overflow-visible!" :
                             "flex flex-col bg-slate-800 p-2 text-white place-self-start min-w-40 relative group"
                         }
-                    >
+                    >   
+                        {(message.message_type === 'file') && (
+                            <FileContent file_uid={message.file_uid}/>
+                        )}
                         <div>
                             {message.content}
                         </div>
