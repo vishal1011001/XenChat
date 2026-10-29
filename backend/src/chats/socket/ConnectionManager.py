@@ -33,10 +33,6 @@ class ConnectionManager:
         try:
             await websocket.send_json(message)
         except Exception as e:
-            print("SEND JSON FAILED")
-            print("EXCEPTION TYPE:", type(e))
-            print("EXCEPTION:", repr(e))
-            print(message)
             await self.disconnect(websocket)
         
     async def broadcast(self, member_uids: List, message: dict):
