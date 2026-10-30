@@ -110,3 +110,10 @@ class FileMetadata(SQLModel, table=True):
     file_path: str
     
     sent_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    
+class UserProfile(SQLModel, table=True):
+    __tablename__='user_profile'
+    
+    user_uid: uuid.UUID = Field(primary_key=True, foreign_key='users.user_uid')
+    about: str | None
+    pfp_file_uid: uuid.UUID = Field(foreign_key='file_metadata.file_uid')
