@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { LOCAL_API_URL, HOSTED_API_URL } from '../../../URLs/endpoints';
+import { LOCAL_API_URL, HOSTED_API_URL } from '../../URLs/endpoints';
 import { useEffect, useState } from 'react';
 
 export function FileContent({ file_uid }) {
@@ -32,6 +32,6 @@ export function FileContent({ file_uid }) {
     }, [file_uid]);
 
     return (
-        <img src={src} className='h-30 w-50'></img>
+        <img src={src} className='max-h-150 max-w-250'></img>
     );
 }

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageOptions } from "./MessagesComponents/MessageOptions";
-import { FileContent } from "./MessagesComponents/FileContent";
+import { FileContent } from "./FileContent";
 
-export function Messages({ sendMessage, activeConvUid, messages, currUserUid, setWantToEdit, setMessageUidToEdit, setText, conversations }) {
+
+export function Messages({ sendMessage, activeConvUid, messages, currUserUid, setWantToEdit, setMessageUidToEdit, setText, conversations, viewFile }) {
     const messagesEndRef = useRef(null);
     const [messagesToDisplay, setMessagesToDisplay] = useState([]);
 
@@ -49,7 +50,7 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
     }
 
     return (
-        <div className="p-4 z-1 flex flex-col gap-1.5 **:overflow-y-auto scroll-auto pb-13 justify-end *:rounded-xl **:max-w-2xl **:flex **:flex-col">
+        <div className="relative p-4 z-1 flex flex-col gap-1.5 **:overflow-y-auto scroll-auto pb-13 justify-end *:rounded-xl **:max-w-2xl **:flex **:flex-col">
             {messagesToDisplay.map((message) => {
                 const otherMember = conversations
                     ?.find(conv => conv.conv_uid === message.conv_uid)
@@ -65,7 +66,9 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                         }
                     >   
                         {(message.message_type === 'file') && (
-                            <FileContent file_uid={message.file_uid}/>
+                            <div onClick={() => viewFile(message.file_uid)} className="w-50 h-35">
+                                <FileContent file_uid={message.file_uid}/>
+                            </div>
                         )}
                         <div>
                             {message.content}
@@ -91,6 +94,7 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                     </div>
                 )
             })}
+
             <div ref={messagesEndRef} />
         </div>
     );
