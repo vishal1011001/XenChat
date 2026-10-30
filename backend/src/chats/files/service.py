@@ -1,7 +1,7 @@
 import uuid
 import os
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.db.models import FileMetadata, Message
+from src.db.models import FileMetadata, Message, UserProfile
 from sqlmodel import select, asc, desc, and_, or_
 from fastapi import UploadFile
 from ..service import ChatService
@@ -55,3 +55,26 @@ class FileService:
         statement = select(FileMetadata.file_path).where(FileMetadata.file_uid == file_uid)
         result = await session.exec(statement)
         return result.first()
+    
+    
+    async def save_pfp(self, user_uid: uuid.UUID, file_uid: uuid.UUID, file_name: str, file_path: str, session: AsyncSession):
+        '''
+        '''
+        await self.save_file_path(
+            file_uid=file_uid, 
+            file_name=file_name, 
+            file_path=file_path, 
+            session=session
+        )
+        
+        data = {
+            'user_uid': user_uid,
+            'file_uid': file_uid
+        }
+        
+        user_profile = UserProfile(
+            **data
+        )
+        
+        session.add(user_profile)
+        await session.commit()
