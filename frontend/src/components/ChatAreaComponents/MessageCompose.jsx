@@ -63,6 +63,18 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
         setSelectedFiles(files);
     }
 
+    const removeFile = (index) => {
+        const files = [...selectedFiles];
+        files.splice(index, 1);
+        setSelectedFiles([...files]);
+
+        // Canceling file operation if all files are deselected
+        if (selectedFiles.length === 1) {
+            console.log("HAAAA")
+            cancelFileOperation();
+        }
+    }
+
     const cancelFileOperation = () => {
         setSelectedFiles(null);
         setWantToUploadFile(false);
@@ -133,14 +145,17 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
             </div>
 
             {selectedFiles && previewUrls && (
-                <div className="absolute bottom-12.5 rounded left-0 bg-slate-700 p-2 pt-0">
+                <div className="absolute w-255 bottom-12.5 rounded left-0 bg-slate-700 p-2 pt-1">
                     <div className="flex justify-between text-white">
                         <h4 className="text-lg">Selected Files:</h4>
-                        <button onClick={cancelFileOperation} className="">X</button>
+                        <button onClick={cancelFileOperation} className="px-1 rounded-lg hover:bg-white hover:text-gray-900 transition-all">Cancel</button>
                     </div>
-                    <div className="flex gap-2 p-2">
-                        {previewUrls.map(url => (
-                            <img key={url} className="h-50 border rounded-lg border-white p-2" src={url} />
+                    <div className="flex gap-2 p-2 overflow-x-scroll scrollbar-thumb-black">
+                        {previewUrls.map((url, index) => (
+                            <div key={url} className="relative min-w-50">
+                                <img className="h-50 border rounded-lg border-white p-2" src={url} />
+                                <button onClick={() => removeFile(index)} className="absolute top-1 left-2 text-white">ⓧ</button>
+                            </div>
                         ))}
                     </div>
                 </div>
