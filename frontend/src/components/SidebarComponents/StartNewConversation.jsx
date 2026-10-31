@@ -4,7 +4,7 @@ import { HOSTED_AUTH_API_URL, LOCAL_AUTH_API_URL } from "../../URLs/endpoints";
 
 export function StartNewConversation({ setConversations, API_URL, handleRefreshToken, setActiveConvUid, setWantToStartConv }) {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
+
     const AUTH_API_URL = isLocal ? LOCAL_AUTH_API_URL : HOSTED_AUTH_API_URL;
     const [username, setUsername] = useState('');
     const [response, setResponse] = useState('');
@@ -102,18 +102,21 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
     }
 
     return (
-        <div className="absolute left-[4vw] top-[6vw] w-[27vw] flex flex-col p-3! rounded-2xl! bg-slate-800! border">
+        <div className="absolute z-1 left-[4vw] top-[6vw] w-[27vw] flex flex-col p-3! rounded-2xl! bg-slate-800! border">
             <h4 className="text-lg font-semibold border-b">{wantToCreateGc ? 'Start A Group Chat' : 'Start New Conversation'}</h4>
 
             <p className="mt-2.5 mb-1">{wantToCreateGc ? 'Search members to add:' : 'Search by entering username:'}</p>
             <div className="flex items-center-safe w-full gap-1">
-                <input
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="bg-slate-600 w-[70%] rounded p-1.5 pl-3 border border-cyan-600 outline-0"
-                    placeholder="eg: vishal"
-                />
-                {userFound && (<p className="text-green-400 text-3xl absolute left-63 top-20">✓</p>)}
+                <div className="flex flex-row relative
+                                bg-slate-600 w-[70%] rounded p-1.5 pl-3 border border-cyan-600">
+                    <input
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className=" outline-0"
+                        placeholder="eg: vishal"
+                    />
+                    {userFound && (<p className="text-green-400 text-3xl absolute top-0 right-1">✓</p>)}
+                </div>
                 <button
                     onClick={handleSearchUser}
                     className="bg-white text-slate-950 p-1.5 flex-1 rounded hover:bg-gray-400"
@@ -121,7 +124,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
             </div>
 
             {responseReturned && !userFound && (<p className="p-1 text-red-500">Username Not Found</p>)}
-            
+
             <div className="pt-2 flex flex-col justify-center gap-2 w-full">
                 {responseReturned && (
                     (userFound) && (
