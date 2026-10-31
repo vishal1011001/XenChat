@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { MountUtilityInfo } from "../components/MountUtilityInfo";
 import { ChatMetadata } from "../components/ChatMetadata";
 import { HOSTED_API_URL, LOCAL_API_URL } from "../URLs/endpoints";
+import { Profile } from "../components/PageOptionsComponents/Profile";
 
 export default function HomePage() {
     const nav = useNavigate();
@@ -22,7 +23,7 @@ export default function HomePage() {
 
     const [messagesToDisplay, setMessagesToDisplay] = useState([]);
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [isChatMetadataOpen, setIsChatMetadataOpen] = useState(false);
+    const [selectedWindow, setSelectedWindow] = useState('mount_utility_info');
 
     const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
     const currUsername = JSON.parse(localStorage.getItem('xen_user_data'))?.username || '';
@@ -99,25 +100,28 @@ export default function HomePage() {
                 'user_uid': currUserUid
                 //read-time (currently backend handles it)
             });
+            setSelectedWindow('chat_area');
         }
 
         activeConvUidRef.current = activeConvUid;
-        setIsChatMetadataOpen(false);
     }, [activeConvUid]);
 
 
     return (
         <div className="h-screen w-screen flex flex-row">
             <Sidebar setConversations={setConversations} API_URL={API_URL} handleRefreshToken={handleRefreshToken} setActiveConvUid={setActiveConvUid} sendMessage={sendMessage} />
-            <Chats conversations={conversations} setConversations={setConversations} activeConvUid={activeConvUid} setActiveConvUid={setActiveConvUid} setIsChatOpen={setIsChatOpen} isChatsLoading={isChatsLoading} />
-            {!isChatOpen ? (
+            <Chats conversations={conversations} setConversations={setConversations} activeConvUid={activeConvUid} setActiveConvUid={setActiveConvUid} setIsChatOpen={setIsChatOpen} isChatsLoading={isChatsLoading} setSelectedWindow={setSelectedWindow} />
+            {selectedWindow === 'mount_utility_info' && (
                 <MountUtilityInfo />
-            ) : (
-                isChatMetadataOpen ? (
-                    <ChatMetadata API_URL={API_URL} setIsChatMetadataOpen={setIsChatMetadataOpen} setIsChatOpen={setIsChatOpen} conversations={conversations} activeConvUid={activeConvUid}/>
-                ) : (
-                    <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messages={messages} activeConvUid={activeConvUid} setIsChatMetadataOpen={setIsChatMetadataOpen} conversations={conversations} />
-                )
+            )}
+            {selectedWindow === 'chat_area' && (
+                <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messages={messages} activeConvUid={activeConvUid} conversations={conversations} setSelectedWindow={setSelectedWindow} />
+            )}
+            {selectedWindow === 'chat_metadata' && (
+                <ChatMetadata API_URL={API_URL} setSelectedWindow={setSelectedWindow} setIsChatOpen={setIsChatOpen} conversations={conversations} activeConvUid={activeConvUid} />
+            )}
+            {selectedWindow === 'your_profile' && (
+                <Profile setSelectedWindow={setSelectedWindow}/>
             )}
         </div>
     );

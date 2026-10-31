@@ -2,14 +2,21 @@ import { useEffect, useState } from "react";
 import { FilterButtons } from "./ChatsComponents/FilterButtons";
 import { SearchBar } from "./ChatsComponents/SearchBar";
 import { ChatRow } from "./ChatsComponents/ChatRow";
+import { Menu } from "./Menu";
 
 
-export function Chats({ conversations, setConversations, activeConvUid, setActiveConvUid, setIsChatOpen, isChatsLoading }) {
+export function Chats({ conversations, setConversations, activeConvUid, setActiveConvUid, setIsChatOpen, isChatsLoading, setSelectedWindow }) {
     const currUserUid = JSON.parse(localStorage.getItem('xen_user_data'))?.user_uid || '';
 
     const changeActiveConvUid = (conv_uid) => {
         setActiveConvUid(conv_uid);
         setIsChatOpen(true);
+        changeSelectedWindow('chat_area');
+    }
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const changeSelectedWindow = (option) => {
+        setSelectedWindow(option);
     }
 
     const [convToDisplay, setConvToDisplay] = useState(conversations);
@@ -34,11 +41,17 @@ export function Chats({ conversations, setConversations, activeConvUid, setActiv
     }, [conversations]);
 
     return (
-        <div className="h-screen w-[35vw] bg-slate-950 flex flex-col">
+        <div className="h-screen w-[35vw] bg-slate-950 flex flex-col relative">
             <div className="p-4 pl-6 w-[28vw] flex flex-row justify-between items-center">
                 <h2 className="text-2xl text-white font-bold">XenChat</h2>
-                <button className="text-white rounded-full p-1 hover:bg-slate-700"><img src='/icons/more.svg' className="h-8 invert-100" /></button>
+                <button className="text-white rounded-full p-1 hover:bg-slate-700"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                ><img src='/icons/more.svg' className="h-8 invert-100" /></button>
             </div>
+
+            {isMenuOpen && (
+                <Menu changeSelectedWindow={changeSelectedWindow}/>
+            )}
 
             <SearchBar conversations={conversations} setConvToDisplay={setConvToDisplay} />
 

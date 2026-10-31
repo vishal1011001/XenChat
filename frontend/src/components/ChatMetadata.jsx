@@ -1,17 +1,17 @@
 import { OptionsMenu } from "./ChatMetadataComponents/OptionsMenu";
 import { getDisplayName } from "./utils/utilityFunctions";
 
-export function ChatMetadata({ API_URL, setIsChatMetadataOpen, setIsChatOpen, conversations, activeConvUid }) {
+export function ChatMetadata({ API_URL, setSelectedWindow, setIsChatOpen, conversations, activeConvUid }) {
     const currUserData = JSON.parse(localStorage.getItem('xen_user_data'));
     
     const closeChatMetadata = () => {
-        setIsChatMetadataOpen(false);
+        setSelectedWindow('chat_area');
     }
 
     const username = getDisplayName(conversations, activeConvUid, currUserData.user_uid);
 
     return (
-        <div className="h-screen bg-slate-800 w-full flex flex-col items-center p-4 overflow-scroll scrollbar-none scroll-auto scroll">
+        <div className="h-screen bg-slate-900 w-full flex flex-col items-center p-4 overflow-scroll scrollbar-none scroll-auto scroll">
             <div className="w-full flex items-center gap-2">
                 <button
                     onClick={closeChatMetadata}
@@ -39,7 +39,7 @@ export function ChatMetadata({ API_URL, setIsChatMetadataOpen, setIsChatOpen, co
 
             <div className="p-2 pt-4 flex flex-col w-full">
                 <h3 className="text-white text-xl w-full pb-2">Options:</h3>
-                <OptionsMenu API_URL={API_URL} username={username} activeConvUid={activeConvUid} setIsChatMetadataOpen={setIsChatMetadataOpen} setIsChatOpen={setIsChatOpen} />
+                <OptionsMenu API_URL={API_URL} username={username} activeConvUid={activeConvUid} setSelectedWindow={setSelectedWindow} setIsChatOpen={setIsChatOpen} />
             </div>
 
         </div>

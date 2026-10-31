@@ -6,7 +6,7 @@ import { act, useEffect, useState } from "react";
 import { getDisplayName } from "./utils/utilityFunctions";
 import { FileOpen } from "./ChatAreaComponents/FileOpen";
 
-export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, setIsChatMetadataOpen, conversations }) {
+export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, conversations, setSelectedWindow }) {
     const [wantToEdit, setWantToEdit] = useState(false);
     const [messageUidToEdit, setMessageUidToEdit] = useState('');
 
@@ -30,7 +30,7 @@ export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, se
 
     return (
         <div className="h-screen bg-[url('/chat-bg.jpg')] bg-cover bg-fixed w-full flex flex-col pb-2 pt-20 overflow-scroll scrollbar-none scroll-auto scroll">
-            <div onClick={() => { setIsChatMetadataOpen(true) }}>
+            <div onClick={() => { setSelectedWindow('chat_metadata') }}>
                 <HeaderBar displayName={displayName} />
             </div>
 

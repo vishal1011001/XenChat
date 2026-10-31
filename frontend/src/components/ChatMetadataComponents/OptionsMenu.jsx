@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export function OptionsMenu({ API_URL, username, activeConvUid, setIsChatMetadataOpen, setIsChatOpen }) {
+export function OptionsMenu({ API_URL, username, activeConvUid, setSelectedWindow, setIsChatOpen }) {
 
     const handleDeleteConv = async (e) => {
         e?.preventDefault();
@@ -13,7 +13,7 @@ export function OptionsMenu({ API_URL, username, activeConvUid, setIsChatMetadat
             })
 
             if (response.status >= 200 && response.status < 300) {
-                setIsChatMetadataOpen(false);
+                setSelectedWindow('mount_utility_info');
                 setIsChatOpen(false);
             }
         } catch (error) {
