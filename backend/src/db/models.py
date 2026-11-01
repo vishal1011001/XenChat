@@ -115,5 +115,5 @@ class UserProfile(SQLModel, table=True):
     __tablename__='user_profile'
     
     user_uid: uuid.UUID = Field(primary_key=True, foreign_key='users.user_uid')
-    about: str | None
+    about: str = Field(nullable=True)
     pfp_file_uid: uuid.UUID = Field(foreign_key='file_metadata.file_uid')

@@ -57,6 +57,14 @@ class FileService:
         return result.first()
     
     
+    async def get_user_profile(self, user_uid: uuid.UUID, session: AsyncSession):
+        '''
+        '''
+        statement = select(UserProfile).where(UserProfile.user_uid == user_uid)
+        res = await session.exec(statement)
+        return res.first() if res else None
+
+    
     async def save_pfp(self, user_uid: uuid.UUID, file_uid: uuid.UUID, file_name: str, file_path: str, session: AsyncSession):
         '''
         '''
@@ -67,14 +75,26 @@ class FileService:
             session=session
         )
         
-        data = {
-            'user_uid': user_uid,
-            'file_uid': file_uid
-        }
+        user_profile = await self.get_user_profile(user_uid, session)
         
-        user_profile = UserProfile(
-            **data
-        )
-        
-        session.add(user_profile)
-        await session.commit()
+        # Updation if User Profile record already exists
+        if user_profile:
+            user_profile.pfp_file_uid = file_uid
+            await session.commit()
+        else:
+            # New Entry
+            data = {
+                'user_uid': user_uid,
+                'pfp_file_uid': file_uid
+            }
+            user_profile = UserProfile(
+                **data
+            )
+            session.add(user_profile)
+            await session.commit()
+            
+    async def get_pfp_file_uid(self, user_uid: uuid.UUID, session: AsyncSession):
+        '''
+        '''
+        user_profile = await self.get_user_profile(user_uid, session)
+        return user_profile.pfp_file_uid if user_profile else None
