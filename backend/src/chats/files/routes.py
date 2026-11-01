@@ -9,12 +9,14 @@ from ..service import ChatService
 from .schema import FileMetadataSchema
 from ..socket.ConnectionManager import manager
 from typing import List
+from src.auth.dependencies import AccessTokenBearer
 
 from fastapi.responses import FileResponse
 
 file_router = APIRouter()
 file_service = FileService()
 chat_service = ChatService()
+access_token_bearer = AccessTokenBearer()
 
 UPLOAD_DIR="uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -79,4 +81,30 @@ async def get_file(
     
     return FileResponse(
         str(file_path)
-    )    
+    ) 
+
+@file_router.post('/pfp')
+async def save_pfp(
+    file: UploadFile = File(),
+    token_data: dict = Depends(access_token_bearer),
+    session: AsyncSession = Depends(get_session)
+):
+    user_uid = token_data['user']['uid']
+    file_uid = uuid.uuid4()
+    file_location = os.path.join(UPLOAD_DIR, str(file_uid) + '.png')
+    
+    await file_service.save_pfp(
+        user_uid=user_uid,
+        file_uid=file_uid,
+        file_name=file.filename,
+        file_path=file_location,
+        session=session
+    )
+    
+    #saving file to disk
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    return {
+        'pfp_file_uid': file_uid
+    }
