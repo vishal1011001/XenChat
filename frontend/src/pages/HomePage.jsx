@@ -121,7 +121,7 @@ export default function HomePage() {
                 <ChatMetadata API_URL={API_URL} setSelectedWindow={setSelectedWindow} setIsChatOpen={setIsChatOpen} conversations={conversations} activeConvUid={activeConvUid} />
             )}
             {selectedWindow === 'your_profile' && (
-                <Profile setSelectedWindow={setSelectedWindow}/>
+                <Profile API_URL={API_URL} setSelectedWindow={setSelectedWindow}/>
             )}
         </div>
     );

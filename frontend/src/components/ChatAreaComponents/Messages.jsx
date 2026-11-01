@@ -64,12 +64,15 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                             "flex flex-col bg-white p-2 place-self-end-safe min-w-40 min-h-15 relative group overflow-visible!" :
                             "flex flex-col bg-slate-800 p-2 text-white place-self-start min-w-40 relative group"
                         }
-                    >   
+                    >
                         {(message.message_type === 'file') && (
-                            <div onClick={() => viewFile(message.file_uid)} className="w-50 h-35">
-                                <FileContent file_uid={message.file_uid}/>
+                            <div onClick={() => viewFile(message.file_uid)} className="w-70">
+                                <FileContent file_uid={message.file_uid}
+                                    className={''}
+                                />
                             </div>
                         )}
+                        
                         <div>
                             {message.content}
                         </div>
@@ -89,7 +92,7 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                             ><img src='/icons/down-arrow.svg' className="h-6 invert-100" /></button>
                         )}
                         {(msgOptionsOpen && message.message_uid === selectedMessageUid && message.sender_uid === currUserUid) && (
-                            <MessageOptions message={message} deleteMessage={deleteMessage} changeEditingState={changeEditingState}/>
+                            <MessageOptions message={message} deleteMessage={deleteMessage} changeEditingState={changeEditingState} />
                         )}
                     </div>
                 )
