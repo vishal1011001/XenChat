@@ -3,6 +3,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ..db.main import get_session
 from ..db.redis import add_jti_to_blocklist
 from .service import AuthService
+from src.chats.files.service import FileService
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
 from .schemas import UserCreateModel, UserLoginModel
@@ -14,6 +15,7 @@ from .dependencies import AccessTokenBearer, RefreshTokenBearer
 
 auth_router = APIRouter()
 auth_service = AuthService()
+file_service = FileService()
 
 ACCESS_TOKEN_EXPIRY=timedelta(minutes=10)
 REFRESH_TOKEN_EXPIRY=timedelta(days=10)
@@ -57,42 +59,48 @@ async def user_signin(
         username = identity
         
     password = user_credentials.password
-    user_data = None
+    user = None
     
     if email is not None:
         email_exists = await auth_service.check_email_exists(email, session)
         if not email_exists:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Email not registered")
-        user_data = await auth_service.get_user_by_email(email, session)
+        user = await auth_service.get_user_by_email(email, session)
          
     elif username is not None:
         username_exits = await auth_service.check_username_exists(username, session)
         if not username_exits:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="username not found")
-        user_data = await auth_service.get_user_by_username(username, session)
-     
-            
-    pass_correct = verify_password_hash(password, user_data.password_hash)
+        user = await auth_service.get_user_by_username(username, session)
+        
+    pass_correct = verify_password_hash(password, user.password_hash)
     if not pass_correct:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Incorrect password")
     
+    pfp_file_uid = await file_service.get_pfp_file_uid(user.user_uid, session)
+    user_data = {
+        "username": user.username,
+        "email": user.email,
+        "user_uid": str(user.user_uid),
+        "pfp_file_uid": str(pfp_file_uid)
+    }  
     
     access_token = await create_access_token(
         user_data={
-            'username': user_data.username,
-            'email': user_data.email,
-            'uid': str(user_data.user_uid)
+            'username': user.username,
+            'email': user.email,
+            'uid': str(user.user_uid)
         },
         expiry=ACCESS_TOKEN_EXPIRY
     )
     refresh_token = await create_access_token(
         user_data={
-            'username': user_data.username,
-            'email': user_data.email,
-            'uid': str(user_data.user_uid)
+            'username': user.username,
+            'email': user.email,
+            'uid': str(user.user_uid)
         },
         expiry=REFRESH_TOKEN_EXPIRY,
         refresh=True
