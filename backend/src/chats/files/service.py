@@ -9,7 +9,7 @@ from ..service import ChatService
 chat_service = ChatService()
 
 
-class FileService:
+class FileService():
     async def save_file_path(self, file_uid: uuid.UUID, file_name: str, file_path: str, session: AsyncSession):
         '''
         '''

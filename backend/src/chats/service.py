@@ -2,7 +2,7 @@ from .schemas import MessageModel, ConvCreateModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
 from sqlmodel import select, desc, asc, and_, delete
-from src.db.models import User, Conversation, ConversationMember, Message 
+from src.db.models import User, Conversation, ConversationMember, Message, UserProfile
 from datetime import datetime
 import uuid
 
@@ -90,10 +90,13 @@ class ChatService():
             statement_members = select(
                 User.user_uid,
                 User.username,
-                ConversationMember.last_read_at
+                ConversationMember.last_read_at,
+                UserProfile.pfp_file_uid,
             ).join(
                 ConversationMember,
                 ConversationMember.user_uid == User.user_uid
+            ).outerjoin(
+                UserProfile, UserProfile.user_uid == User.user_uid
             ).where(
                 ConversationMember.conv_uid == conv_uid
             )
@@ -105,10 +108,11 @@ class ChatService():
                 {
                     "user_uid": user_uid,
                     "username": username,
-                    "last_read_at": last_read_at
+                    "last_read_at": last_read_at,
+                    "pfp_file_uid": pfp_file_uid
                 } 
-                for user_uid, username, last_read_at in members_result
-            ]
+                for user_uid, username, last_read_at, pfp_file_uid in members_result
+            ]           
             
             # metadata of each conv
             statement_conv_metadata = select(Conversation).where(Conversation.conv_uid == conv_uid)
