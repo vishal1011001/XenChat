@@ -7,7 +7,7 @@ export function FileOpen({ file_uid, closeFile }) {
             <button onClick={() => closeFile()} className="absolute top-3 right-3 text-xl">ⓧ</button>
             <div className="flex justify-between w-full">
                 <button >L</button>
-                <FileContent file_uid={file_uid} />
+                <FileContent file_uid={file_uid} className={'max-h-120'}/>
                 <button >R</button>
             </div>
         </div>

@@ -1,5 +1,6 @@
+import { FileContent } from "./ChatAreaComponents/FileContent";
 import { OptionsMenu } from "./ChatMetadataComponents/OptionsMenu";
-import { getDisplayName } from "./utils/utilityFunctions";
+import { getDisplayName, getDisplayPfpUid } from "./utils/utilityFunctions";
 
 export function ChatMetadata({ API_URL, setSelectedWindow, setIsChatOpen, conversations, activeConvUid }) {
     const currUserData = JSON.parse(localStorage.getItem('xen_user_data'));
@@ -9,6 +10,7 @@ export function ChatMetadata({ API_URL, setSelectedWindow, setIsChatOpen, conver
     }
 
     const username = getDisplayName(conversations, activeConvUid, currUserData.user_uid);
+    const displayPfpUid = getDisplayPfpUid(conversations, activeConvUid, currUserData.user_uid);
 
     return (
         <div className="h-screen bg-slate-900 w-full flex flex-col items-center p-4 overflow-scroll scrollbar-none scroll-auto scroll">
@@ -23,7 +25,11 @@ export function ChatMetadata({ API_URL, setSelectedWindow, setIsChatOpen, conver
             </div>
 
             <div>
-                <img src='/icons/default-pfp.svg' className="h-50" />
+                {displayPfpUid ? (
+                    <FileContent file_uid={displayPfpUid} className={"h-50 rounded-full"} />
+                ) : (
+                    <img src='/icons/default-pfp.svg' className="h-50" />
+                )}
             </div>
 
             <div>

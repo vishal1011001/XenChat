@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FileContent } from "../ChatAreaComponents/FileContent";
 
 export function ChatRow({ chat, currUserUid, lastMsgSentAt, currUserLastReadAt, lastMsgSenderUid, lastMsgConvUid, activeConvUid, onOpen }) {
     const [isRead, setIsRead] = useState(false);
@@ -10,12 +11,18 @@ export function ChatRow({ chat, currUserUid, lastMsgSentAt, currUserLastReadAt, 
         setIsRead(lastMsgTime > currUserLastReadTime);
     }, [lastMsgSentAt, currUserLastReadAt]);
 
+    const otherUser = chat?.members?.find(member => member.user_uid !== currUserUid);
+
     return (
         <div key={chat.conv_uid}
             onClick={onOpen}
             className="flex flex-row pl-3 p-2 hover:bg-slate-900 rounded-xl mr-4"
         >
-            <img src={`/icons/default-pfp.svg`} className="h-10 rounded-full self-center" />
+            {chat.conv_metadata.conv_type === 'dm' && otherUser?.pfp_file_uid ? (
+                <FileContent file_uid={otherUser?.pfp_file_uid} className={'h-10 rounded-full self-center'} />
+            ) : (
+                <img src={`/icons/default-pfp.svg`} className="h-10 rounded-full self-center" />
+            )}
             <div className="flex flow-row items-center w-full justify-between">
                 <div className="flex flex-col">
                     <p className="text-xl text-white font-bold pl-4">{(chat?.conv_metadata?.conv_type === 'group') ? chat?.conv_metadata?.conv_name : chat?.members?.find(mem => mem.user_uid !== currUserUid)?.username}</p>
