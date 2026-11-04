@@ -90,7 +90,7 @@ export function Profile({ API_URL, setSelectedWindow }) {
                 <PfpPreview imageSrc={pfpPreviewUrl} onCropComplete={handleCropDone} />
             )}
 
-            <div className="flex justify-center pt-4">
+            <div className="flex justify-center pt-4 pb-3">
                 <h2 className="text-3xl font-bold">@{userData?.username}</h2>
             </div>
 

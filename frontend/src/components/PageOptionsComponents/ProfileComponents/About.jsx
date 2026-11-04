@@ -8,19 +8,22 @@ export function About({ API_URL, userData }) {
         setAbout(e.target.value);
     }
 
-    const handleSaveAbout = async () => {
+    const handleSaveAbout = async (e) => {
         e?.preventDefault();
 
         try {
             const token = localStorage.getItem('xen_access_token');
-            const response = await axios.post(`${API_URL}/profile/about`, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await axios.patch(`${API_URL}/profile/about`,
+                null,
+                {   
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    params: {about},
+                });
 
             if (response.status >= 200 && response.status < 300) {
-                const data = response.data;
+                const data = response.data.about;
                 setAbout(data);
                 setWantToUpdateAbout(false);
                 
@@ -28,7 +31,7 @@ export function About({ API_URL, userData }) {
                     ...userData,
                     about: data
                 } 
-                localStorage.setItem('xen_user_data', updatedUserData);
+                localStorage.setItem('xen_user_data', JSON.stringify(updatedUserData));
             } else {
                 throw new Error('Response Error');
             }
@@ -38,7 +41,7 @@ export function About({ API_URL, userData }) {
     }
 
     return (
-        <div className={`flex items-center text-xl gap-1 bg-slate-800 p-2 ${userData?.about ? '' : ''}`}>
+        <div className={`flex items-center place-self-center rounded-full min-w-50 text-xl gap-1 bg-slate-800 p-2 ${wantToUpdateAbout && 'border border-pink-600 shadow shadow-pink-300'} ${userData?.about ? '' : ''}`}>
             <button
                 onClick={() => setWantToUpdateAbout(!wantToUpdateAbout)} 
                 className="rounded-full p-1 px-2 hover:bg-slate-700">
@@ -50,12 +53,12 @@ export function About({ API_URL, userData }) {
             </button>
             <h4 className="font-bold">About:</h4>
             {wantToUpdateAbout ? (
-                <div className="">
-                    <input placeholder="Write about you" value={about} onChange={changeAbout} classname="" />
-                    <button onClick={handleSaveAbout} className="">Save</button>
+                <div className="flex items-center">
+                    <input placeholder="Write about you" value={about} onChange={changeAbout} className="outline-0 px-2" />
+                    <button onClick={handleSaveAbout} className="hover:bg-slate-700 p-1 px-2 text-sm rounded-xl">Save</button>
                 </div>
             ) : (
-                <p className={userData?.about ? '' : 'text-gray-600'}>{userData?.about || 'Not set'}</p>
+                <p className={about ? 'pl-1' : 'text-gray-600'}>{about || 'Not set'}</p>
             )}
             
         </div>
