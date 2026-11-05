@@ -40,6 +40,7 @@ class Member(BaseModel):
     username: str
     last_read_at: datetime
     pfp_file_uid: uuid.UUID | None
+    about: str | None
     
 class ConversationResponseModel(BaseModel):
     conv_uid: uuid.UUID

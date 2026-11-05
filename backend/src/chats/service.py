@@ -92,6 +92,7 @@ class ChatService():
                 User.username,
                 ConversationMember.last_read_at,
                 UserProfile.pfp_file_uid,
+                UserProfile.about
             ).join(
                 ConversationMember,
                 ConversationMember.user_uid == User.user_uid
@@ -109,9 +110,10 @@ class ChatService():
                     "user_uid": user_uid,
                     "username": username,
                     "last_read_at": last_read_at,
-                    "pfp_file_uid": pfp_file_uid
+                    "pfp_file_uid": pfp_file_uid,
+                    "about": about
                 } 
-                for user_uid, username, last_read_at, pfp_file_uid in members_result
+                for user_uid, username, last_read_at, pfp_file_uid, about in members_result
             ]           
             
             # metadata of each conv
