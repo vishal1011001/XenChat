@@ -31,9 +31,7 @@ export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, co
 
     return (
         <div className="h-screen bg-[url('/chat-bg.jpg')] bg-cover bg-fixed w-full flex flex-col pb-2 pt-20 overflow-scroll scrollbar-none scroll-auto scroll">
-            <div onClick={() => { setSelectedWindow('chat_metadata') }}>
-                <HeaderBar displayName={displayName} displayPfpUid={displayPfpUid} />
-            </div>
+            <HeaderBar displayName={displayName} displayPfpUid={displayPfpUid} setSelectedWindow={setSelectedWindow}/>
 
             <div className="bg-slate-900 place-self-center p-3 rounded text-center">
                 <p className="text-white">

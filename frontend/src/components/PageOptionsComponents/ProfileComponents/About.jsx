@@ -41,7 +41,7 @@ export function About({ API_URL, userData }) {
     }
 
     return (
-        <div className={`flex items-center place-self-center rounded-full min-w-50 text-xl gap-1 bg-slate-800 p-2 ${wantToUpdateAbout && 'border border-pink-600 shadow shadow-pink-300'} ${userData?.about ? '' : ''}`}>
+        <div className={`flex items-center place-self-center rounded-full min-w-50 text-xl gap-1 bg-slate-800 p-2 ${wantToUpdateAbout && 'border border-pink-600 shadow shadow-pink-300'}`}>
             <button
                 onClick={() => setWantToUpdateAbout(!wantToUpdateAbout)} 
                 className="rounded-full p-1 px-2 hover:bg-slate-700">

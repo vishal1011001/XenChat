@@ -16,4 +16,13 @@ const getDisplayPfpUid = (conversations, activeConvUid, currUserUid) => {
     return displayPfpUid;
 }
 
-export {getDisplayName, getDisplayPfpUid};
+const getAbout = (conversations, activeConvUid, currUserUid) => {
+    const openConvData = conversations?.find(conv => conv?.conv_uid === activeConvUid);
+
+    if (openConvData?.conv_metadata?.conv_type === 'group') return null;
+
+    const about = openConvData?.members?.find(member => member?.user_uid !== currUserUid)?.about;
+    return about; 
+}
+
+export {getDisplayName, getDisplayPfpUid, getAbout};
