@@ -61,10 +61,14 @@ export function Profile({ API_URL, setSelectedWindow }) {
         };
     }, [pfpPreviewUrl]);
 
+    const closeProfile = () => {
+        setSelectedWindow('mount_utility_info');
+    }
+
     return (
-        <div className="h-screen w-full bg-slate-900 p-4 text-white">
+        <div className="h-screen w-full bg-slate-900 p-4 text-white flex flex-col ">
             <div className="flex">
-                <button><img src='/icons/previous.svg' className="h-5 invert-100" /></button>
+                <button onClick={closeProfile}><img src='/icons/previous.svg' className="h-5 invert-100" /></button>
                 <h3 className="text-xl pl-4">Your Profile</h3>
             </div>
 
