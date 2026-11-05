@@ -1,6 +1,6 @@
 import { FileContent } from "./ChatAreaComponents/FileContent";
 import { OptionsMenu } from "./ChatMetadataComponents/OptionsMenu";
-import { getDisplayName, getDisplayPfpUid } from "./utils/utilityFunctions";
+import { getDisplayName, getDisplayPfpUid, getAbout } from "./utils/utilityFunctions";
 
 export function ChatMetadata({ API_URL, setSelectedWindow, setIsChatOpen, conversations, activeConvUid }) {
     const currUserData = JSON.parse(localStorage.getItem('xen_user_data'));
@@ -11,6 +11,7 @@ export function ChatMetadata({ API_URL, setSelectedWindow, setIsChatOpen, conver
 
     const username = getDisplayName(conversations, activeConvUid, currUserData.user_uid);
     const displayPfpUid = getDisplayPfpUid(conversations, activeConvUid, currUserData.user_uid);
+    const about = getAbout(conversations, activeConvUid, currUserData.user_uid)
 
     return (
         <div className="h-screen bg-slate-900 w-full flex flex-col items-center p-4 overflow-scroll scrollbar-none scroll-auto scroll">
@@ -32,8 +33,12 @@ export function ChatMetadata({ API_URL, setSelectedWindow, setIsChatOpen, conver
                 )}
             </div>
 
-            <div>
+            <div className="py-3">
                 <h2 className="text-white text-3xl font-bold">@{username}</h2>
+            </div>
+
+            <div className="flex items-center place-self-center rounded-full bg-slate-800 p-2 text-white">
+                <p className={`text-lg ${!about && 'text-gray-400'}`}>{about || 'About not set by the user'}</p>
             </div>
 
             <div className="w-full p-2 pt-4">
