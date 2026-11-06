@@ -40,8 +40,16 @@ class FileNotFoundException(XenChatException):
     pass
 
 
-def create_exception_handler(status_code: int, initial_detail: Any) -> Callable([Request, Exception], JSONResponse):
-    async def exception_handler(request: Request, exc: XenChatException):
+def create_exception_handler(
+    status_code: int, 
+    initial_detail: Any
+) -> Callable[[Request, XenChatException], JSONResponse]:
+    
+    async def exception_handler(
+        request: Request, 
+        exc: XenChatException
+    ) -> JSONResponse:
+        
         return JSONResponse(
             content=initial_detail,
             status_code=status_code
