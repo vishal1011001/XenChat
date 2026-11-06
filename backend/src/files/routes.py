@@ -5,9 +5,9 @@ from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
 from .service import FileService
-from ..service import ChatService
+from src.files.service import ChatService
 from .schema import FileMetadataSchema
-from ..socket.ConnectionManager import manager
+from src.chats.socket.ConnectionManager import manager
 from typing import List
 from src.auth.dependencies import AccessTokenBearer
 

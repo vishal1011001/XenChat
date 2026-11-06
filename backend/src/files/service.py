@@ -4,7 +4,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.models import FileMetadata, Message, UserProfile
 from sqlmodel import select, asc, desc, and_, or_
 from fastapi import UploadFile
-from ..service import ChatService
+from src.chats.service import ChatService
 
 chat_service = ChatService()
 

@@ -3,7 +3,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from ..db.main import get_session
 from ..db.redis import add_jti_to_blocklist
 from .service import AuthService
-from src.chats.files.service import FileService
+from src.files.service import FileService
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
 from .schemas import UserCreateModel, UserLoginModel
