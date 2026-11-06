@@ -5,9 +5,10 @@ from typing import List
 from src.auth.routes import auth_router
 from src.chats.routes import chat_router
 from src.chats.socket.SocketRoutes import router as ws_router
-from src.chats.files.routes import file_router
+from src.files.routes import file_router
 from src.profile.routes import profile_router
 from .middleware import register_middleware
+from .exceptions import register_exception
 from .chats.socket.ConnectionManager import ConnectionManager
 import uuid
 
@@ -29,6 +30,7 @@ app = FastAPI(
 )
     
 register_middleware(app)
+register_exception(app)
 
 app.include_router(auth_router, prefix=f"/api/{version}/auth", tags=["auth"])
 app.include_router(chat_router, prefix=f"/api/{version}/chats", tags=["chats"])
