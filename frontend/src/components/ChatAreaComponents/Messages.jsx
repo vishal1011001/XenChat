@@ -61,8 +61,8 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                 return (
                     <div key={message.message_uid}
                         className={(message.sender_uid === currUserUid) ?
-                            "flex flex-col bg-white p-2 place-self-end-safe min-w-40 min-h-15 relative group overflow-visible!" :
-                            "flex flex-col bg-slate-800 p-2 text-white place-self-start min-w-40 relative group"
+                            "flex flex-col bg-purple-700/20 backdrop-blur-lg border border-white text-white p-2 place-self-end-safe min-w-40 min-h-15 relative group overflow-visible!" :
+                            "flex flex-col bg-slate-800/50 backdrop-blur-lg border border-slate-900 text-white p-2 place-self-start min-w-40 relative group"
                         }
                     >
                         {(message.message_type === 'file') && (
@@ -78,10 +78,10 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                         </div>
 
                         {/* TIME STAMP & READ RECEIPT */}
-                        <div className="flex flex-row! gap-1 text-xs justify-end-safe text-gray-500">
+                        <div className="flex flex-row! gap-1 text-xs justify-end-safe text-gray-300">
                             <span>{message.sent_at?.substr(11, 5)}</span>
                             {message.sender_uid === currUserUid && isRead && (
-                                <span aria-hidden="false" aria-label=" Read " className="x1rv0e52"><svg viewBox="0 0 24 24" width="16" preserveAspectRatio="xMidYMid meet" fill="currentColor"><title>wds-ic-read</title><path fill="blue" d="M14.73 6.01a1 1 0 0 1 1.41-.15l.01.01a1 1 0 0 1 .15 1.41L7.6 18.01a1 1 0 0 1-.73.37h-.05c-.26 0-.52-.11-.71-.3l-4.03-4.09a.99.99 0 0 1 0-1.41.99.99 0 0 1 1.41 0l3.25 3.29 7.99-9.86Zm5.71.12a1 1 0 0 1 1.41-.15h-.01a1 1 0 0 1 .15 1.41l-8.41 10.45a1 1 0 0 1-.73.37h-.05a1 1 0 0 1-.71-.3l-1.36-1.26a.55.55 0 0 1-.02-.81l.56-.68c.21-.2.53-.21.75-.03l.71.58 7.71-9.58Z"></path></svg></span>
+                                <span aria-hidden="false" aria-label=" Read " className="x1rv0e52"><svg viewBox="0 0 24 24" width="16" preserveAspectRatio="xMidYMid meet" fill="currentColor"><title>wds-ic-read</title><path fill="white" d="M14.73 6.01a1 1 0 0 1 1.41-.15l.01.01a1 1 0 0 1 .15 1.41L7.6 18.01a1 1 0 0 1-.73.37h-.05c-.26 0-.52-.11-.71-.3l-4.03-4.09a.99.99 0 0 1 0-1.41.99.99 0 0 1 1.41 0l3.25 3.29 7.99-9.86Zm5.71.12a1 1 0 0 1 1.41-.15h-.01a1 1 0 0 1 .15 1.41l-8.41 10.45a1 1 0 0 1-.73.37h-.05a1 1 0 0 1-.71-.3l-1.36-1.26a.55.55 0 0 1-.02-.81l.56-.68c.21-.2.53-.21.75-.03l.71.58 7.71-9.58Z"></path></svg></span>
                             )}
                         </div>
 

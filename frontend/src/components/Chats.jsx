@@ -17,6 +17,7 @@ export function Chats({ conversations, setConversations, activeConvUid, setActiv
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const changeSelectedWindow = (option) => {
         setSelectedWindow(option);
+        setIsMenuOpen(false);
     }
 
     const [convToDisplay, setConvToDisplay] = useState(conversations);

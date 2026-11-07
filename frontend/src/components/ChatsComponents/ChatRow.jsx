@@ -16,7 +16,8 @@ export function ChatRow({ chat, currUserUid, lastMsgSentAt, currUserLastReadAt, 
     return (
         <div key={chat.conv_uid}
             onClick={onOpen}
-            className="flex flex-row pl-3 p-2 hover:bg-slate-900 rounded-xl mr-4"
+            className={`flex flex-row pl-3 p-2 hover:bg-slate-900 rounded-xl mr-4 transition duration-200
+                        ${chat.conv_uid === activeConvUid && 'bg-linear-60 from-slate-900 via-slate-900 to-slate-950 border shadow shadow-pink-900 transition duration-300 border-pink-800'}`}
         >
             {chat.conv_metadata.conv_type === 'dm' && otherUser?.pfp_file_uid ? (
                 <FileContent file_uid={otherUser?.pfp_file_uid} className={'h-10 rounded-full self-center'} />
