@@ -3,12 +3,13 @@ import { FileUploadOptions } from "./FileUploadOptions";
 import { LOCAL_API_URL, HOSTED_API_URL } from "../../URLs/endpoints";
 import axios from 'axios';
 
-export function MessageCompose({ text, setText, sendMessage, currUserUid, activeConvUid, wantToEdit, setWantToEdit, messageUidToEdit }) {
+export function MessageCompose({ text, setText, sendMessage, currUserUid, activeConvUid, wantToEdit, setWantToEdit, messageUidToEdit, displayName }) {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const API_URL = isLocal ? LOCAL_API_URL : HOSTED_API_URL;
 
     const transmitMessage = () => {
-        if (selectedFiles) submitFile();
+        if (displayName === 'xenchatbot') handleChatBot();
+        else if (selectedFiles) submitFile();
         else if (wantToEdit) handleEditMessage();
         else handleSendMessage();
     }
@@ -49,8 +50,7 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
         if (event.key === 'Enter') {
             event?.preventDefault();
 
-            if (wantToEdit) handleEditMessage();
-            else handleSendMessage();
+            transmitMessage();
         }
     }
 
@@ -70,7 +70,6 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
 
         // Canceling file operation if all files are deselected
         if (selectedFiles.length === 1) {
-            console.log("HAAAA")
             cancelFileOperation();
         }
     }
@@ -121,6 +120,28 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
         })
         setPreviewUrls([...objectUrls]);
     }, [selectedFiles]);
+
+    const handleChatBot = async () => {
+        const message = {
+            req: 'send_msg',
+            content: text.trim(),
+            conv_uid: activeConvUid,
+            sender_uid: currUserUid,
+            message_type: 'text'
+        };
+        setText('');
+        const token = localStorage.getItem('xen_access_token');
+        try {
+            await axios.post(`${API_URL}/chatbot`, message, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+        } catch (error) {
+            console.error('Chatbot error:', error);
+        }
+    }
 
     return (
         <div className="flex w-[66vw] justify-center fixed bottom-2 self-center-safe z-2 border border-blue-950 rounded-4xl">

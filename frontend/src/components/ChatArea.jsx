@@ -41,7 +41,7 @@ export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, co
 
             <Messages sendMessage={sendMessage} activeConvUid={activeConvUid} messages={messages} currUserUid={currUserUid} setWantToEdit={setWantToEdit} setMessageUidToEdit={setMessageUidToEdit} setText={setText} conversations={conversations} viewFile={viewFile} />
 
-            <MessageCompose text={text} setText={setText} sendMessage={sendMessage} currUserUid={currUserUid} activeConvUid={activeConvUid} wantToEdit={wantToEdit} setWantToEdit={setWantToEdit} messageUidToEdit={messageUidToEdit} />
+            <MessageCompose text={text} setText={setText} sendMessage={sendMessage} currUserUid={currUserUid} activeConvUid={activeConvUid} wantToEdit={wantToEdit} setWantToEdit={setWantToEdit} messageUidToEdit={messageUidToEdit} displayName={displayName} />
 
             {isFileOpen && selectedFileUid && (
                 <FileOpen file_uid={selectedFileUid} closeFile={closeFile}/>
