@@ -7,6 +7,7 @@ from src.chats.routes import chat_router
 from src.chats.socket.SocketRoutes import router as ws_router
 from src.files.routes import file_router
 from src.profile.routes import profile_router
+from src.chats.chatbot.routes import bot_router
 from .middleware import register_middleware
 from .exceptions import register_exception
 from .chats.socket.ConnectionManager import ConnectionManager
@@ -37,3 +38,4 @@ app.include_router(chat_router, prefix=f"/api/{version}/chats", tags=["chats"])
 app.include_router(ws_router)
 app.include_router(file_router, prefix=f"/api/{version}/file", tags=["file"])
 app.include_router(profile_router, prefix=f"/api/{version}/profile", tags=["profile"])
+app.include_router(bot_router, prefix=f"/api/{version}/chatbot", tags=["chatbot"])
