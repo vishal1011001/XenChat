@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageOptions } from "./MessagesComponents/MessageOptions";
 import { FileContent } from "./FileContent";
+import ReactMarkDown from 'react-markdown';
+import remarkGfm from 'remark-gfm'; 
 
 
 export function Messages({ sendMessage, activeConvUid, messages, currUserUid, setWantToEdit, setMessageUidToEdit, setText, conversations, viewFile }) {
@@ -73,9 +75,16 @@ export function Messages({ sendMessage, activeConvUid, messages, currUserUid, se
                             </div>
                         )}
                         
-                        <div>
+                        {/* <div>
                             {message.content}
                         </div>
+                        */}
+
+                        <ReactMarkDown remarkPlugins={[remarkGfm]} >
+                            {message.content}
+                        </ReactMarkDown>
+
+                        
 
                         {/* TIME STAMP & READ RECEIPT */}
                         <div className="flex flex-row! gap-1 text-xs justify-end-safe text-gray-300">
