@@ -1,3 +1,4 @@
+import uuid
 from fastapi import APIRouter, WebSocket, Depends, status
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.responses import HTMLResponse
@@ -8,7 +9,7 @@ from .service import ChatService
 from .schemas import ConvCreateModel, RetrieveAllChatsResponseModel, ConversationResponseModel
 from fastapi.exceptions import HTTPException
 from .socket.ConnectionManager import manager
-import uuid
+from src.exceptions import FalseIdException
 
 auth_service = AuthService()
 chat_service = ChatService()
@@ -38,8 +39,7 @@ async def create_conversation(
     user_uid_of_creator = token_data['user']['uid']
     response = await chat_service.create_conversation(conv_create_data, user_uid_of_creator, session)
     if response == 'unauthorized':
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="You are not authorized to create conversation with false id")
+        raise FalseIdException()
     
     conv_uid = response['conv_uid']
     member_uids = await chat_service.conv_members(conv_uid, session)
@@ -57,12 +57,13 @@ async def delete_conversation(
     session: AsyncSession = Depends(get_session)
 ):
     member_uids = await chat_service.conv_members(conv_uid, session)
-    
     user_uid = token_data['user']['uid']
-    service_response = await chat_service.delete_conversation(user_uid, conv_uid, session)
-    if service_response == 'Forbidden':
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail=service_response)
+    
+    is_member = await chat_service.user_is_member_of_conv(user_uid, conversation_uid, session)
+    if not is_member:
+        raise FalseIdException()
+    
+    service_response = await chat_service.delete_conversation(user_uid, conv_uid, session)  
     
     await manager.broadcast(member_uids, service_response)
     return {

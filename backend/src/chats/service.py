@@ -250,10 +250,6 @@ class ChatService():
         '''
             Deleted a conversation, it's metadata and all messages of that conversation
         '''
-        is_member = await self.user_is_member_of_conv(user_uid, conversation_uid, session)
-        if not is_member:
-            return 'Forbidden'
-        
         statement0 = delete(Message).where(Message.conv_uid == conversation_uid)
         statement1 = delete(ConversationMember).where(ConversationMember.conv_uid == conversation_uid)
         statement2 = delete(Conversation).where(Conversation.conv_uid == conversation_uid)
