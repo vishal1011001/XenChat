@@ -39,6 +39,11 @@ class ExpiredTokenException(XenChatException):
     '''Token is expired'''
     pass
 
+class FalseIdException(XenChatException):
+    '''Performing operation that a user_uid is not allowed to. 
+       eg: creating chat for others w/o himself included'''
+    pass
+
 class ChatNotFoundException(XenChatException):
     '''Chat/Conversation does not exist'''
     pass
@@ -172,6 +177,18 @@ def register_exception(app: FastAPI):
                 "message": "Token is expired",
                 "resolution": "Get a new token",
                 "error_code": "expired_token"
+            }
+        )
+    )
+    
+    app.add_exception_handler(
+        FalseIdException,
+        create_exception_handler(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            initial_detail={
+                "message": "You cannot perform this operation with this account",
+                "resolution": "You can only perform operations related to your account",
+                "error_code": "false_id"
             }
         )
     )
