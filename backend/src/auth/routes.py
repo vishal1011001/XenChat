@@ -12,6 +12,7 @@ from datetime import timedelta
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from .dependencies import AccessTokenBearer, RefreshTokenBearer
+from src.exceptions import UserAlreadyExistsException, UsernameInUseException, EmailNotFoundException, UsernameNotFoundException, InvalidCredentialsException
 
 auth_router = APIRouter()
 auth_service = AuthService()
@@ -30,11 +31,9 @@ async def user_signup(
     email_exists = await auth_service.check_email_exists(email, session)
     username_exists = await auth_service.check_username_exists(username, session)
     if email_exists:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Email already registered.")
+        raise UserAlreadyExistsException()
     elif username_exists:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Username already in use.")
+        raise UsernameInUseException()
     
     new_user = await auth_service.create_user(user_credentials, session)
 
@@ -64,21 +63,18 @@ async def user_signin(
     if email is not None:
         email_exists = await auth_service.check_email_exists(email, session)
         if not email_exists:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="Email not registered")
+            raise EmailNotFoundException()
         user = await auth_service.get_user_by_email(email, session)
          
     elif username is not None:
         username_exits = await auth_service.check_username_exists(username, session)
         if not username_exits:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="username not found")
+            raise UsernameNotFoundException()
         user = await auth_service.get_user_by_username(username, session)
         
     pass_correct = verify_password_hash(password, user.password_hash)
     if not pass_correct:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Incorrect password")
+        raise InvalidCredentialsException()
     
     pfp_file_uid = await file_service.get_pfp_file_uid(user.user_uid, session)
     user_data = {
@@ -126,10 +122,7 @@ async def search_user(
             "message": "found"
         }
     else :
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='username not found'
-        )
+        raise UsernameNotFoundException()
     
 @auth_router.get('/refresh_token')
 async def get_new_access_token(

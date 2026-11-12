@@ -11,6 +11,7 @@ from .service import AuthService
 
 from fastapi.exceptions import HTTPException
 from fastapi import status
+from src.exceptions import InvalidTokenException, ExpiredTokenException, UserNotFoundException
 
 
 class TokenBearer(HTTPBearer):
@@ -24,12 +25,10 @@ class TokenBearer(HTTPBearer):
         token_data = await decode_token(token)
         
         if not token_data:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                 detail='invalid token')
+            raise InvalidTokenException()
         
         if await check_token_in_blocklist(token_data['jti']):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                 detail='expired token')
+            raise ExpiredTokenException()
         
         self.verify_token_type(token_data)
         
@@ -64,6 +63,5 @@ async def get_current_user(
     if user:
         return user
     else: 
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='user not found.')
+        raise UserNotFoundException()
         
