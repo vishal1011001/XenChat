@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
+    LLM_API_KEY: str
+    LLM_MODEL: str = "openai/gpt-oss-20b"
     
     model_config=SettingsConfigDict(
         env_file='.env',

@@ -1,9 +1,10 @@
 import os
 from openai import AsyncOpenAI
+from src.config import Config
 
 client = AsyncOpenAI(
-    api_key=os.getenv('LLM_API_KEY'),
-    base_url=os.getenv('LLM_BASE_URL', 'https://')
+    api_key=Config.LLM_API_KEY,
+    base_url='https://api.groq.com/openai/v1'
 )
 
-MODEL = os.getenv('LLM_MODEL', '')
+MODEL = Config.LLM_MODEL
