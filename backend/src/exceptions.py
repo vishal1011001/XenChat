@@ -11,8 +11,20 @@ class UserNotFoundException(XenChatException):
     '''User does not exist'''
     pass
 
+class EmailNotFoundException(XenChatException):
+    '''Email not registered'''
+    pass
+
+class UsernameNotFoundException(XenChatException):
+    '''Username not registered'''
+    pass
+
 class UserAlreadyExistsException(XenChatException):
     '''A user with given email/username is already registered'''
+    pass
+
+class UsernameInUseException(XenChatException):
+    '''A user with given username is already registered'''
     pass
 
 class InvalidCredentialsException(XenChatException):
@@ -81,6 +93,30 @@ def register_exception(app: FastAPI):
     )
     
     app.add_exception_handler(
+        EmailNotFoundException,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={
+                "message": "Email not registered",
+                "resolution": "Create an account OR Try entering different username or email",
+                "error_code": "email_not_found"
+            }
+        )
+    )
+    
+    app.add_exception_handler(
+        UsernameNotFoundException,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={
+                "message": "Username not found",
+                "resolution": "Try different username",
+                "error_code": "username_not_found"
+            }
+        )
+    )
+    
+    app.add_exception_handler(
         UserAlreadyExistsException,
         create_exception_handler(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -88,6 +124,18 @@ def register_exception(app: FastAPI):
                 "message": "User already exists",
                 "resolution": "Log into existing account, or create new account with a different username/email",
                 "error_code": "user_already_exists"
+            }
+        )
+    )
+    
+    app.add_exception_handler(
+        UsernameInUseException,
+        create_exception_handler(
+            status_code=status.HTTP_226_IM_USED,
+            initial_detail={
+                "message": "Username already in use",
+                "resolution": "Try a different username",
+                "error_code": "username_in_use"
             }
         )
     )
