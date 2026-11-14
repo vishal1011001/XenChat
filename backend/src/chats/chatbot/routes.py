@@ -6,7 +6,7 @@ from src.files.service import ChatService
 from src.chats.socket.ConnectionManager import manager
 from src.auth.dependencies import AccessTokenBearer
 
-from .bot_service import get_bot_reply
+from .bot_service import get_bot_reply, summarizer
 from ..schemas import MessageModel
 
 bot_router = APIRouter()
@@ -61,3 +61,24 @@ async def send_message(
         member_uids=member_uids,
         message=bot_payload
     )
+    
+@bot_router.get('/summarize/{conv_uid}/{limit}')
+async def summarize(
+    conv_uid: uuid.UUID,
+    limit: int,
+    token_data: dict = Depends(access_token_bearer),
+    session: AsyncSession = Depends(get_session)
+):
+    username = token_data['user']['username']
+    
+    last_messages = await chat_service.get_last_limited_messages_of_conv(
+        conv_uid=conv_uid,
+        session=session,
+        limit=limit
+    )
+    
+    names = await chat_service.get_usernames(conv_uid, session)
+    summary = await summarizer(last_messages, names, username)
+    return {
+        "summary": summary
+    }
