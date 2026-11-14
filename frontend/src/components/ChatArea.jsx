@@ -5,8 +5,9 @@ import { useWebSocket } from "../hooks/useWebSocket";
 import { act, useEffect, useState } from "react";
 import { getDisplayName, getDisplayPfpUid } from "./utils/utilityFunctions";
 import { FileOpen } from "./ChatAreaComponents/FileOpen";
+import { Summarize } from "../components/ChatAreaComponents/Summarize";
 
-export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, conversations, setSelectedWindow }) {
+export function ChatArea({ API_URL, sendMessage, currUserUid, messages, activeConvUid, conversations, setSelectedWindow }) {
     const [wantToEdit, setWantToEdit] = useState(false);
     const [messageUidToEdit, setMessageUidToEdit] = useState('');
 
@@ -29,6 +30,8 @@ export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, co
         setSelectedFileUid('');
     }
 
+    const [wantToSummarize, setWantToSummarize] = useState(false);
+
     return (
         <div className="h-screen bg-[url('/chat-bg.jpg')] bg-cover bg-fixed w-full flex flex-col pb-2 pt-20 overflow-scroll scrollbar-none scroll-auto scroll">
             <HeaderBar displayName={displayName} displayPfpUid={displayPfpUid} setSelectedWindow={setSelectedWindow}/>
@@ -41,7 +44,11 @@ export function ChatArea({ sendMessage, currUserUid, messages, activeConvUid, co
 
             <Messages sendMessage={sendMessage} activeConvUid={activeConvUid} messages={messages} currUserUid={currUserUid} setWantToEdit={setWantToEdit} setMessageUidToEdit={setMessageUidToEdit} setText={setText} conversations={conversations} viewFile={viewFile} />
 
-            <MessageCompose text={text} setText={setText} sendMessage={sendMessage} currUserUid={currUserUid} activeConvUid={activeConvUid} wantToEdit={wantToEdit} setWantToEdit={setWantToEdit} messageUidToEdit={messageUidToEdit} displayName={displayName} />
+            {wantToSummarize && (
+                <Summarize API_URL={API_URL} activeConvUid={activeConvUid}/>
+            )}
+
+            <MessageCompose text={text} setText={setText} sendMessage={sendMessage} currUserUid={currUserUid} activeConvUid={activeConvUid} wantToEdit={wantToEdit} setWantToEdit={setWantToEdit} messageUidToEdit={messageUidToEdit} displayName={displayName} setWantToSummarize={setWantToSummarize}/>
 
             {isFileOpen && selectedFileUid && (
                 <FileOpen file_uid={selectedFileUid} closeFile={closeFile}/>

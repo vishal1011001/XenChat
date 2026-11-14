@@ -115,7 +115,7 @@ export default function HomePage() {
                 <MountUtilityInfo />
             )}
             {selectedWindow === 'chat_area' && (
-                <ChatArea sendMessage={sendMessage} currUserUid={currUserUid} messages={messages} activeConvUid={activeConvUid} conversations={conversations} setSelectedWindow={setSelectedWindow} />
+                <ChatArea API_URL={API_URL} sendMessage={sendMessage} currUserUid={currUserUid} messages={messages} activeConvUid={activeConvUid} conversations={conversations} setSelectedWindow={setSelectedWindow} />
             )}
             {selectedWindow === 'chat_metadata' && (
                 <ChatMetadata API_URL={API_URL} setSelectedWindow={setSelectedWindow} setIsChatOpen={setIsChatOpen} conversations={conversations} activeConvUid={activeConvUid} />
