@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { FileUploadOptions } from "./FileUploadOptions";
 import { LOCAL_API_URL, HOSTED_API_URL } from "../../URLs/endpoints";
 import axios from 'axios';
+import { BotOptions } from "./ChatBotComponents/BotOptions";
 
-export function MessageCompose({ text, setText, sendMessage, currUserUid, activeConvUid, wantToEdit, setWantToEdit, messageUidToEdit, displayName }) {
+export function MessageCompose({ text, setText, sendMessage, currUserUid, activeConvUid, wantToEdit, setWantToEdit, messageUidToEdit, displayName, setWantToSummarize }) {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const API_URL = isLocal ? LOCAL_API_URL : HOSTED_API_URL;
 
@@ -143,17 +144,26 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
         }
     }
 
+    const [botOptionsOpen, setBotOptionsOpen] = useState(false);
+    
     return (
         <div className="flex w-[66vw] justify-center fixed bottom-2 self-center-safe z-2 border border-blue-950 rounded-4xl">
 
-            <div className="p-1.5 pl-5 bg-blue-950 text-white rounded-l-4xl w-full flex justify-between">
+            <div className="p-2.5 pl-5 bg-blue-950 text-white rounded-l-4xl w-full flex justify-between">
                 <input placeholder="Type a message..."
                     onKeyDown={handleKeyDown}
                     value={text}
                     onChange={(e) => (setText(e.target.value))}
                     className="placeholder-white w-full outline-0"
                 />
-                <div className="flex pr-1 *:p-2 *:rounded-full ">
+                <div className="flex pr-1 gap-2.5 *:rounded-full ">
+                    <button
+                        onClick={() => {setBotOptionsOpen(!botOptionsOpen)}}
+                    ><img src='/icons/gpt-logo.svg' className="p-0 h-6 invert-100"/></button>
+                    {botOptionsOpen && (
+                        <BotOptions setWantToSummarize={setWantToSummarize} setBotOptionsOpen={setBotOptionsOpen}/>
+                    )}
+
                     <button
                         onClick={() => setWantToUploadFile(!wantToUploadFile)}
                     ><img src='/icons/paperclip.svg' className="h-5 invert-100" /></button>
