@@ -281,3 +281,18 @@ class ChatService():
         res = await session.exec(statement)
         return res.all()
     
+    async def get_usernames(self, conv_uid: uuid.UUID, session: AsyncSession):
+        '''
+        '''
+        statement = (
+            select(User)
+            .join(ConversationMember, ConversationMember.user_uid == User.user_uid)
+            .where(ConversationMember.conv_uid == conv_uid)
+        )
+        result = await session.exec(statement)
+        
+        res_dict = {}
+        for r in result:
+            res_dict[r.user_uid] = r.username
+        
+        return res_dict
