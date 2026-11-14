@@ -272,3 +272,12 @@ class ChatService():
         result = result.first()
         print(result)
         return True if result else False
+    
+    async def get_last_limited_messages_of_conv(self, conv_uid: uuid.UUID, session: AsyncSession, limit: int = 100):
+        '''
+            Return some number of last messages from a conversation
+        '''
+        statement = select(Message).where(Message.conv_uid == conv_uid).order_by(asc(Message.sent_at)).limit(limit)
+        res = await session.exec(statement)
+        return res.all()
+    
