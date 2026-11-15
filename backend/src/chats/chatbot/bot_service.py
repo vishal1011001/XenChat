@@ -75,6 +75,7 @@ SYSTEM_PROMPT_SUMMARIZE = (
     "Use Markdown: a short bullet list under these bold labels, skipping any that are empty: "
     "**Summary**, **Decisions**, **Questions for you**, **Action items**. "
     "Refer to people by name. No intro or outro."
+    "Format the summary as a bulleted list using Markdown (- ) with each point on a new line."
 )
 
 def format_transcript(messages, names: dict) -> str:

@@ -3,7 +3,7 @@ import { useState } from "react";
 import ReactMarkDown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-export function Summarize({API_URL, activeConvUid}) {
+export function Summarize({ API_URL, activeConvUid }) {
     const [summary, setSummary] = useState('');
     const [generatingSummary, setGeneratingSummary] = useState(false);
 
@@ -19,8 +19,10 @@ export function Summarize({API_URL, activeConvUid}) {
             });
 
             if (response.status >= 200 && response.status < 300) {
-                setGeneratingSummary(false);
-                setSummary(JSON.stringify(response.data.summary));
+                setSummary(response.data.summary);
+                setTimeout(() => {
+                    setGeneratingSummary(false);
+                }, 2000);
             }
         } catch (error) {
             setGeneratingSummary(false);
@@ -29,28 +31,42 @@ export function Summarize({API_URL, activeConvUid}) {
     }
 
     return (
-        <div className="flex flex-col absolute bottom-14 rounded bg-white p-2 pt-1 z-2">
-            <div>
-                <h4 className="text-lg">Summary of unread messages:</h4>
+        <div className="flex flex-col w-120 absolute bottom-14 right-5 rounded bg-slate-700 **:text-white z-2">
+            <div className="rounded-t p-1">
+                <h4 className="text-md text-purple-300! p-2">CHAT INSIGHTS</h4>
+                <h4 className="text-sm pl-2">Get summary of recent messages</h4>
             </div>
 
-            <div>
-                <p>Click to Summarize past messages of this chat</p>
+            <div className="p-4 flex justify-center border-b">
                 <button
                     onClick={handleSummarize}
-                    className="bg-gray-300 p-2"
-                >SUMMARIZE</button>
+                    disabled={generatingSummary ? true : false}
+                    className={`bg-white p-2 px-4 font-semibold rounded-lg text-slate-800! ${generatingSummary && 'disabled:opacity-60'}`}
+                >{generatingSummary ? 'Generating...' : 'Generate Summary'}</button>
             </div>
 
-            {generatingSummary && (
-                <div className="">Generating...</div>
-            )}
-
-            {summary && (
-                <ReactMarkDown remarkPlugins={[remarkGfm]} >
-                    {summary}
-                </ReactMarkDown>
-            )}
+            {generatingSummary ? (
+                <div className="">
+                    <div class="w-full h-1 bg-slate-200 dark:bg-slate-800 overflow-hidden rounded-full">
+                        <div class="h-full bg-indigo-600 dark:bg-indigo-400 rounded-full animate-[indeterminate_1.5s_infinite_ease-in-out] origin-left"></div>
+                    </div>
+                </div>
+            ) : summary ? (
+                <div className="rounded-b p-2 text-lg">
+                    <ReactMarkDown remarkPlugins={[remarkGfm]}
+                        components={{
+                            ul: ({ node, ...props }) => (
+                                <ul className="list-disc pl-5 space-y-1" {...props} />
+                            ),
+                            li: ({ node, ...props }) => (
+                                <li className="text-slate-800" {...props} />
+                            ),
+                        }}
+                    >
+                        {summary.replace(/^"|"$/g, '').replace(/\\n/g, '\n')}
+                    </ReactMarkDown>
+                </div>
+            ) : null}
         </div>
     );
 }
