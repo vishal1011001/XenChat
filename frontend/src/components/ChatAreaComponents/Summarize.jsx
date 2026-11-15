@@ -49,8 +49,8 @@ export function Summarize({ API_URL, activeConvUid, setWantToSummarize }) {
 
             {generatingSummary ? (
                 <div className="">
-                    <div class="w-full h-1 bg-slate-200 dark:bg-slate-800 overflow-hidden rounded-full">
-                        <div class="h-full bg-indigo-600 dark:bg-indigo-400 rounded-full animate-[indeterminate_1.5s_infinite_ease-in-out] origin-left"></div>
+                    <div className="w-full h-1 bg-slate-200 dark:bg-slate-800 overflow-hidden rounded-full">
+                        <div className="h-full bg-indigo-600 dark:bg-indigo-400 rounded-full animate-[indeterminate_1.5s_infinite_ease-in-out] origin-left"></div>
                     </div>
                 </div>
             ) : summary ? (

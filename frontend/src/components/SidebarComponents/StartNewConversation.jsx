@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from 'axios';
 import { HOSTED_AUTH_API_URL, LOCAL_AUTH_API_URL } from "../../URLs/endpoints";
 
-export function StartNewConversation({ setConversations, API_URL, handleRefreshToken, setActiveConvUid, setWantToStartConv }) {
+export function StartNewConversation({ setConversations, API_URL, handleRefreshToken, setActiveConvUid, setWantToStartConv, currUsername }) {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
     const AUTH_API_URL = isLocal ? LOCAL_AUTH_API_URL : HOSTED_AUTH_API_URL;
@@ -14,7 +14,7 @@ export function StartNewConversation({ setConversations, API_URL, handleRefreshT
 
     const [wantToCreateGc, setWantToCreateGc] = useState(false);
     const [gcName, setGcName] = useState('');
-    const currUsername = JSON.parse(localStorage.getItem('xen_user_data'))?.username
+    
     const [addedMembers, setAddedMembers] = useState([
         {
             username: currUsername,
