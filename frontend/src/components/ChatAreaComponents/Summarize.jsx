@@ -3,7 +3,7 @@ import { useState } from "react";
 import ReactMarkDown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-export function Summarize({ API_URL, activeConvUid }) {
+export function Summarize({ API_URL, activeConvUid, setWantToSummarize }) {
     const [summary, setSummary] = useState('');
     const [generatingSummary, setGeneratingSummary] = useState(false);
 
@@ -36,6 +36,8 @@ export function Summarize({ API_URL, activeConvUid }) {
                 <h4 className="text-md text-purple-300! p-2">CHAT INSIGHTS</h4>
                 <h4 className="text-sm pl-2">Get summary of recent messages</h4>
             </div>
+
+            <button onClick={() => (setWantToSummarize(false))} className="absolute p-1 px-2 right-0 hover:bg-slate-600 mt-1 mr-1">CLOSE</button>
 
             <div className="p-4 flex justify-center border-b">
                 <button

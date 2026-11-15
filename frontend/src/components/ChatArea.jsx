@@ -45,7 +45,7 @@ export function ChatArea({ API_URL, sendMessage, currUserUid, messages, activeCo
             <Messages sendMessage={sendMessage} activeConvUid={activeConvUid} messages={messages} currUserUid={currUserUid} setWantToEdit={setWantToEdit} setMessageUidToEdit={setMessageUidToEdit} setText={setText} conversations={conversations} viewFile={viewFile} />
 
             {wantToSummarize && (
-                <Summarize API_URL={API_URL} activeConvUid={activeConvUid}/>
+                <Summarize API_URL={API_URL} activeConvUid={activeConvUid} setWantToSummarize={setWantToSummarize} />
             )}
 
             <MessageCompose text={text} setText={setText} sendMessage={sendMessage} currUserUid={currUserUid} activeConvUid={activeConvUid} wantToEdit={wantToEdit} setWantToEdit={setWantToEdit} messageUidToEdit={messageUidToEdit} displayName={displayName} setWantToSummarize={setWantToSummarize}/>
