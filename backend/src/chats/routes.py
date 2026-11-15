@@ -59,7 +59,7 @@ async def delete_conversation(
     member_uids = await chat_service.conv_members(conv_uid, session)
     user_uid = token_data['user']['uid']
     
-    is_member = await chat_service.user_is_member_of_conv(user_uid, conversation_uid, session)
+    is_member = await chat_service.user_is_member_of_conv(user_uid, conv_uid, session)
     if not is_member:
         raise FalseIdException()
     
