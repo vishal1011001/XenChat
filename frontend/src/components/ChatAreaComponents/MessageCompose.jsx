@@ -3,6 +3,7 @@ import { FileUploadOptions } from "./FileUploadOptions";
 import { LOCAL_API_URL, HOSTED_API_URL } from "../../URLs/endpoints";
 import axios from 'axios';
 import { BotOptions } from "./ChatBotComponents/BotOptions";
+import EmojiPicker, { Emoji } from "emoji-picker-react";
 
 export function MessageCompose({ text, setText, sendMessage, currUserUid, activeConvUid, wantToEdit, setWantToEdit, messageUidToEdit, displayName, setWantToSummarize }) {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -145,6 +146,11 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
     }
 
     const [botOptionsOpen, setBotOptionsOpen] = useState(false);
+    const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+
+    const handleEmojiClick = (emojiData) => {
+        setText(prev => prev + emojiData.emoji);
+    }
     
     return (
         <div className="flex w-[66vw] justify-center fixed bottom-2 self-center-safe z-2 border border-blue-950 rounded-4xl">
@@ -171,9 +177,17 @@ export function MessageCompose({ text, setText, sendMessage, currUserUid, active
                         <FileUploadOptions handleFileChange={handleFileChange} />
                     )}
 
-                    <button><img src='/icons/emoji.svg' className="h-5 invert-100" /></button>
+                    <button
+                        onClick={() => setEmojiPickerOpen(!emojiPickerOpen)}
+                    ><img src='/icons/emoji.svg' className="h-5 invert-100" /></button>
                 </div>
             </div>
+
+            {emojiPickerOpen && (
+                <div className="absolute bottom-12 right-30">
+                    <EmojiPicker onEmojiClick={handleEmojiClick} />
+                </div>
+            )}
 
             {selectedFiles && previewUrls && (
                 <div className="absolute w-255 bottom-12.5 rounded left-0 bg-slate-700 p-2 pt-1">
