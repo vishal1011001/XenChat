@@ -3,7 +3,7 @@ import { MessageCompose } from "./ChatAreaComponents/MessageCompose";
 import { Messages } from "./ChatAreaComponents/Messages";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { act, useEffect, useState } from "react";
-import { getDisplayName, getDisplayPfpUid } from "./utils/utilityFunctions";
+import { getConvMetadata, getDisplayName, getDisplayPfpUid } from "./utils/utilityFunctions";
 import { FileOpen } from "./ChatAreaComponents/FileOpen";
 import { Summarize } from "../components/ChatAreaComponents/Summarize";
 
@@ -13,8 +13,9 @@ export function ChatArea({ API_URL, sendMessage, currUserUid, messages, activeCo
 
     const [text, setText] = useState('');
 
-    const displayName = getDisplayName(conversations, activeConvUid, currUserUid);
-    const displayPfpUid = getDisplayPfpUid(conversations, activeConvUid, currUserUid);
+    const convMetadata = getConvMetadata(conversations, activeConvUid);
+    const displayName = getDisplayName(convMetadata, currUserUid);
+    const displayPfpUid = getDisplayPfpUid(convMetadata, currUserUid);
 
     // File Viewing 
     const [isFileOpen, setIsFileOpen] = useState(false);
