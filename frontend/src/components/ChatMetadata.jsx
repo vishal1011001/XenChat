@@ -1,6 +1,6 @@
 import { FileContent } from "./ChatAreaComponents/FileContent";
 import { OptionsMenu } from "./ChatMetadataComponents/OptionsMenu";
-import { getDisplayName, getDisplayPfpUid, getAbout } from "./utils/utilityFunctions";
+import { getConvMetadata, getDisplayName, getDisplayPfpUid, getAbout } from "./utils/utilityFunctions";
 
 export function ChatMetadata({ API_URL, setSelectedWindow, setIsChatOpen, conversations, activeConvUid }) {
     const currUserData = JSON.parse(localStorage.getItem('xen_user_data'));
@@ -9,9 +9,11 @@ export function ChatMetadata({ API_URL, setSelectedWindow, setIsChatOpen, conver
         setSelectedWindow('chat_area');
     }
 
-    const username = getDisplayName(conversations, activeConvUid, currUserData.user_uid);
-    const displayPfpUid = getDisplayPfpUid(conversations, activeConvUid, currUserData.user_uid);
-    const about = getAbout(conversations, activeConvUid, currUserData.user_uid)
+    const convMetadata = getConvMetadata(conversations, activeConvUid);
+    const username = getDisplayName(convMetadata, currUserData.user_uid);
+    const displayPfpUid = getDisplayPfpUid(convMetadata, currUserData.user_uid);
+    const about = getAbout(convMetadata, currUserData.user_uid);
+
 
     return (
         <div className="h-screen bg-slate-900 w-full flex flex-col items-center p-4 overflow-scroll scrollbar-none scroll-auto scroll">
