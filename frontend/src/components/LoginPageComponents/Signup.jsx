@@ -7,9 +7,11 @@ export function Signup({ AUTH_API_URL, setUserData, handleLogin, loginFailed, se
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [isSigningUp, setIsSigningUp] = useState(false);
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        setIsSigningUp(true);
 
         const credentials = {
             'email': email,
@@ -37,6 +39,7 @@ export function Signup({ AUTH_API_URL, setUserData, handleLogin, loginFailed, se
                 throw new Error('Registration Failed');
             }
         } catch (error) {
+            setIsSigningUp(false);
             setLoginFailed(true);
             setLoginErrorMessage(error.response.data.detail);
             console.error('error signing up user: ', error);
@@ -67,8 +70,8 @@ export function Signup({ AUTH_API_URL, setUserData, handleLogin, loginFailed, se
 
             <button
                 type="submit"
-                className="bg-red-900 p-3 w-full rounded text-white font-bold"
-            >Register</button>
+                className={`bg-red-900 p-3 w-full rounded text-white font-bold`}
+            >{isSigningUp ? <p className="animate-pulse">Signing Up...</p> : 'Register'}</button>
         </form>
     );
 }

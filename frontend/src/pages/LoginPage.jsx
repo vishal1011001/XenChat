@@ -20,6 +20,7 @@ export default function LoginPage() {
     const [wantToLogin, setWantToLogin] = useState(true);
     const [loginFailed, setLoginFailed] = useState(false);
     const [loginErrorMessage, setLoginErrorMessage] = useState('Server error, try again later');
+    const [isSigningIn, setIsSingingIn] = useState(false);
 
     const toggleWantToLogin = () => {
         setWantToLogin(!wantToLogin);
@@ -32,6 +33,8 @@ export default function LoginPage() {
         if (!signinCredsValidator(creds, setLoginFailed, setLoginErrorMessage)) {
             throw new Error('Error in credentials')
         }
+
+        setIsSingingIn(true);
 
         try {
             const response = await axios.post(`${AUTH_API_URL}/signin`, creds);
@@ -48,6 +51,7 @@ export default function LoginPage() {
                 throw new Error('login failed');
             }
         } catch (error) {
+            setIsSingingIn(false);
             setLoginFailed(true);
             setLoginErrorMessage(error.response?.data?.detail);
             console.log(loginErrorMessage)
@@ -63,7 +67,7 @@ export default function LoginPage() {
                 <div className="w-[50%] h-full flex flex-col items-center justify-center p-4 pt-0">
 
                     {wantToLogin ? (
-                        <Signin handleLogin={handleLogin} loginFailed={loginFailed} loginErrorMessage={loginErrorMessage} />
+                        <Signin handleLogin={handleLogin} loginFailed={loginFailed} loginErrorMessage={loginErrorMessage} isSigningIn={isSigningIn} />
                     ) : (
                         <Signup AUTH_API_URL={AUTH_API_URL} setUserData={setUserData} handleLogin={handleLogin} loginFailed={loginFailed} setLoginFailed={setLoginFailed} loginErrorMessage={loginErrorMessage} setLoginErrorMessage={setLoginErrorMessage} />
                     )}

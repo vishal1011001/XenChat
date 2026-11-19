@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function Signin({ handleLogin, loginFailed, loginErrorMessage }) {
+export function Signin({ handleLogin, loginFailed, loginErrorMessage, isSigningIn }) {
     const [identity, setIdentity] = useState('');
     const [password, setPassword] = useState('');
 
@@ -31,7 +31,11 @@ export function Signin({ handleLogin, loginFailed, loginErrorMessage }) {
 
             <button
                 type="submit"
-                className="bg-red-900 p-3 w-full rounded text-white font-bold">Login</button>
+                className={`bg-red-900 p-3 w-full rounded text-white font-bold `}
+            >{isSigningIn 
+                ? <p className="animate-pulse">Signing In....</p> 
+                : 'Login'
+            }</button>
         </form>
     );
 }
